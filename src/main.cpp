@@ -78,7 +78,7 @@ void setup() {
   Serial.begin(9600);
   AudioMemory(8);
   sgtl5000_1.enable();
-  sgtl5000_1.volume(0.6);
+  sgtl5000_1.volume(0.5);
   sgtl5000_1.audioPostProcessorEnable();
   sgtl5000_1.enhanceBassEnable();
   sgtl5000_1.enhanceBass(0.7, 0.7, 0, 2);
@@ -115,6 +115,7 @@ void loop() {
     stayinAlive();
     
     colorWipeInstant(BLACK);
+    fadeInLED(WHITE_LED_PIN);
     mode = 0;
   }
 
@@ -138,18 +139,19 @@ void stayinAlive(){
   }
     
   unsigned long startTime = millis();
-  Twinkle(ORANGE, startTime + 23180, 42);
+  Twinkle(startTime + 23180, 42);
   fillQuarters(583, 0);
-  Twinkle(ORANGE, startTime + 27890, 42);
+  Twinkle(startTime + 27890, 42);
   fillQuarters(583, 1);
-  Twinkle(ORANGE, startTime + 32550, 42);
+  Twinkle(startTime + 32550, 42);
   fillQuarters(583, 2);
-  Twinkle(ORANGE, startTime + 37125, 42);
+  Twinkle(startTime + 37125, 42);
   fillQuarters(583, 3);
-  Twinkle(ORANGE, startTime + 54000, 42);
+  Twinkle(startTime + 54000, 42);
 }
 
-void Twinkle(int color, unsigned long endTime, int SpeedDelay) {
+// Light patches in a random color
+void Twinkle(unsigned long endTime, int SpeedDelay) {
   colorWipeInstant(DARKWHITE);
   int colorList[8] = {BLUE, RED, GREEN, YELLOW, ORANGE, PINK, WHITE, PASTEL4};
   unsigned long presentTime = millis();
@@ -220,6 +222,7 @@ void fillQuarters(int msDelay, int colorOffset){
   }  
 }
 
+// Set all pixels to a common color
 void colorWipeInstant(int color){
    for (int i=0; i < leds.numPixels(); i++) {
     leds.setPixel(i, color);
@@ -233,5 +236,13 @@ void colorWipe(int color, int wait)
     leds.setPixel(i, color);
     leds.show();
     delayMicroseconds(wait);
+  }
+}
+
+// Slowly fade in an LED
+void fadeInLED(int pin) {
+  for (int fadeValue = 0 ; fadeValue <= 255; fadeValue = fadeValue+5) {
+    analogWrite(pin, fadeValue);
+    delay(5);
   }
 }
