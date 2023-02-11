@@ -7,84 +7,63 @@
 #include <OctoWS2811.h>
 #include <Bounce.h>
 
+#define FASTLED_INTERNAL
+#include <FastLED.h>
+
+#include "CTeensy4Controller.h"
+
 // RGB LED
 // Any group of digital pins may be used
 const int numPins = 1;
 byte pinList[numPins] = {2};
 
 const int ledsPerStrip = 120;
+const int numLeds = numPins * ledsPerStrip;
+CRGB leds[numLeds];
 
 // These buffers need to be large enough for all the pixels.
 // The total number of pixels is "ledsPerStrip * numPins".
 // Each pixel needs 3 bytes, so multiply by 3.  An "int" is
 // 4 bytes, so divide by 4.  The array is created using "int"
 // so the compiler will align it to 32 bit memory.
-const int bytesPerLED = 3;  // change to 4 if using RGBW
+const int bytesPerLED = 3; // change to 4 if using RGBW
 DMAMEM int displayMemory[ledsPerStrip * numPins * bytesPerLED / 4];
 int drawingMemory[ledsPerStrip * numPins * bytesPerLED / 4];
 
 const int config = WS2811_GRB | WS2811_800kHz;
 
-OctoWS2811 leds(ledsPerStrip, displayMemory, drawingMemory, config, numPins, pinList);
+OctoWS2811 octo(ledsPerStrip, displayMemory, drawingMemory, config, numPins, pinList);
 
-#define RED    0xFF0000
-#define GREEN  0x00FF00
-#define BLUE   0x0000FF
-#define YELLOW 0xFFFF00
-#define PINK   0xFF1088
-#define ORANGE 0xE05800
-#define ORANGE2 0xEA5500
-#define ORANGE3 0xD94400
-#define ORANGE4 0xD22201
-#define ORANGE5 0xDE2500
-#define WHITE  0xFFFFFF
-#define BLACK  0x000000
-#define DARKWHITE 0x040408
-
-#define PASTEL1 0x913CCD
-#define PASTEL2 0xF05F74
-#define PASTEL3 0xF76D3C
-#define PASTEL4 0xF7D842
-#define PASTEL5 0x2CA8C2
-#define PASTEL6 0x98CB4A
-#define PASTEL7 0x839098
-#define PASTEL8 0x5381E6
+CTeensy4Controller<GRB, WS2811_800kHz> *pcontroller;
 
 // Audio Player
-AudioPlaySdWav           playSdWav1;
-AudioOutputI2S           i2s1;
-AudioConnection          patchCord1(playSdWav1, 0, i2s1, 0);
-AudioConnection          patchCord2(playSdWav1, 1, i2s1, 1);
-AudioControlSGTL5000     sgtl5000_1;
-
+AudioPlaySdWav playSdWav1;
+AudioOutputI2S i2s1;
+AudioConnection patchCord1(playSdWav1, 0, i2s1, 0);
+AudioConnection patchCord2(playSdWav1, 1, i2s1, 1);
+AudioControlSGTL5000 sgtl5000_1;
 
 // Use these with the Teensy Audio Shield
-#define SDCARD_CS_PIN    10
-#define SDCARD_MOSI_PIN  7
-#define SDCARD_SCK_PIN   14
-
+#define SDCARD_CS_PIN 10
+#define SDCARD_MOSI_PIN 7
+#define SDCARD_SCK_PIN 14
 
 // Control pin for the white led strip
 #define WHITE_LED_PIN 14
 
 // Buzzer pin
 #define BUZZER_PIN 5
+Bounce pushbutton = Bounce(BUZZER_PIN, 10); // 10 ms debounce
 
-Bounce pushbutton = Bounce(BUZZER_PIN, 10);  // 10 ms debounce
+#define BRIGHTNESS 96
+#define FRAMES_PER_SECOND 120
 
-void stayinAlive();
-void Twinkle(unsigned long endTime, int SpeedDelay);
-void animateSnake(int snakeLength, int startPosition, int endPosition, bool clockwise, unsigned long endTime, int color);
-void fillQuarters(int msDelay, int colorOffset);
-void colorWipeInstant(int color);
-void colorWipe(int color, int wait);
-void fadeInLED(int pin);
-
-void setup() {
- // Enable white light first
+void setup()
+{
+  // Enable white light first
   pinMode(WHITE_LED_PIN, OUTPUT);
   digitalWrite(WHITE_LED_PIN, HIGH);
-  
+
   Serial.begin(9600);
   AudioMemory(8);
   sgtl5000_1.enable();
@@ -94,143 +73,242 @@ void setup() {
   sgtl5000_1.enhanceBass(0.7, 0.7, 0, 2);
   SPI.setMOSI(SDCARD_MOSI_PIN);
   SPI.setSCK(SDCARD_SCK_PIN);
-  if (!(SD.begin(SDCARD_CS_PIN))) {
-    while (1) {
+  if (!(SD.begin(SDCARD_CS_PIN)))
+  {
+    while (1)
+    {
       Serial.println("Unable to access the SD card");
       delay(500);
     }
   }
-  delay(1000); 
+  delay(1000);
 
   pinMode(BUZZER_PIN, INPUT_PULLUP);
 
-  leds.begin();
-  leds.show();
+  octo.begin();
+  pcontroller = new CTeensy4Controller<GRB, WS2811_800kHz>(&octo);
+
+  FastLED.setBrightness(BRIGHTNESS);
+  FastLED.addLeds(pcontroller, leds, numPins * ledsPerStrip);
 }
 
-void loop() {
-  if (pushbutton.update()) {
-    digitalWrite(WHITE_LED_PIN, LOW);
-    stayinAlive();
+uint8_t gHue = 0; // rotating "base color" used by many of the patterns
 
-    colorWipeInstant(BLACK);
+uint32_t gTimeCode = 0;
+uint32_t gLastTimeCodeDoneAt = 0;
+uint32_t gLastTimeCodeDoneFrom = 0;
+
+#define TC(HOURS, MINUTES, SECONDS)                         \
+  ((uint32_t)(((uint32_t)((HOURS) * (uint32_t)(3600000))) + \
+              ((uint32_t)((MINUTES) * (uint32_t)(60000))) + \
+              ((uint32_t)((SECONDS) * (uint32_t)(1000)))))
+
+#define AT(HOURS, MINUTES, SECONDS) if (atTC(TC(HOURS, MINUTES, SECONDS)))
+#define FROM(HOURS, MINUTES, SECONDS) if (fromTC(TC(HOURS, MINUTES, SECONDS)))
+
+static bool atTC(uint32_t tc)
+{
+  bool maybe = false;
+  if (gTimeCode >= tc)
+  {
+    if (gLastTimeCodeDoneAt < tc)
+    {
+      maybe = true;
+      gLastTimeCodeDoneAt = tc;
+    }
+  }
+  return maybe;
+}
+
+static bool fromTC(uint32_t tc)
+{
+  bool maybe = false;
+  if (gTimeCode >= tc)
+  {
+    if (gLastTimeCodeDoneFrom <= tc)
+    {
+      maybe = true;
+      gLastTimeCodeDoneFrom = tc;
+    }
+  }
+  return maybe;
+}
+
+void rainbow();
+void rainbowWithGlitter();
+void addGlitter(fract8 chanceOfGlitter);
+void confetti();
+void bpm();
+void juggle();
+void applause();
+void fadeToBlack();
+
+// There are two kinds of things you can put into this performance:
+// "FROM" and "AT".
+//
+// * "FROM" means starting FROM this time AND CALLING IT REPEATEDLY
+//   until the next "FROM" time comes.
+//
+// * "AT" means do this ONE TIME ONLY "AT" the designated time.
+//
+// At least one of the FROM clauses will ALWAYS be executed.
+// In the transitional times, TWO pieces of code will be executed back to back.
+// For example, if one piece says "FROM(0,0,1.000) {DrawRed()}" and another says
+// "FROM(0,0,2.000) {flashblue();}", what you'll get is this:
+//   00:00:01.950  -> calls DrawRed
+//   00:00:01.975  -> calls DrawRed
+//   00:00:02.000  -> calls DrawRed AND calls DrawBlue !
+//   00:00:02.025  -> calls DrawBlue
+//   00:00:02.050  -> calls DrawBlue
+// In most cases, this probably isn't significant in practice, but it's important
+// to note.  It could be avoided by listing the sequence steps in reverse
+// chronological order, but that makes it hard to read.
+void Performance()
+{
+  AT(0, 0, 00.001) { FastLED.setBrightness(BRIGHTNESS); }
+  FROM(0, 0, 00.100) { confetti(); }
+  AT(0, 0, 23.180) { fill_solid(leds, numLeds, CRGB::Red); }
+  AT(0, 0, 23.763) { fill_solid(leds, numLeds, CRGB::Green); }
+  AT(0, 0, 24.346) { fill_solid(leds, numLeds, CRGB::Blue); }
+  AT(0, 0, 24.929) { fill_solid(leds, numLeds, CRGB::Yellow); }
+  FROM(0, 0, 25.512) { confetti(); }
+  AT(0, 0, 27.890) { fill_solid(leds, numLeds, CRGB::Red); }
+  AT(0, 0, 28.473) { fill_solid(leds, numLeds, CRGB::Green); }
+  AT(0, 0, 29.056) { fill_solid(leds, numLeds, CRGB::Blue); }
+  AT(0, 0, 29.639) { fill_solid(leds, numLeds, CRGB::Yellow); }
+  FROM(0, 0, 29.722) { confetti(); }
+  AT(0, 0, 32.550) { fill_solid(leds, numLeds, CRGB::Red); }
+  AT(0, 0, 33.133) { fill_solid(leds, numLeds, CRGB::Green); }
+  AT(0, 0, 33.716) { fill_solid(leds, numLeds, CRGB::Blue); }
+  AT(0, 0, 34.299) { fill_solid(leds, numLeds, CRGB::Yellow); }
+  FROM(0, 0, 34.882) { confetti(); }
+  AT(0, 0, 37.125) { fill_solid(leds, numLeds, CRGB::Red); }
+  AT(0, 0, 37.708) { fill_solid(leds, numLeds, CRGB::Green); }
+  AT(0, 0, 38.291) { fill_solid(leds, numLeds, CRGB::Blue); }
+  AT(0, 0, 38.874) { fill_solid(leds, numLeds, CRGB::Yellow); }
+  FROM(0, 0, 44.707) { confetti(); }
+  FROM(0, 0, 49.000) { fadeToBlack(); }
+  // FROM(0, 0, 01.500) { juggle(); }
+  // FROM(0, 0, 03.375) { rainbowWithGlitter(); }
+  // FROM(0, 0, 04.333) { bpm(); }
+  // FROM(0, 0, 06.666) { juggle(); }
+  // FROM(0, 0, 08.750) { confetti(); }
+  // AT(0, 0, 11.000) { gHue = HUE_PINK; }
+  // AT(0, 0, 12.000) { fill_solid(leds, numLeds, CRGB::Red); }
+  // AT(0, 0, 15.000) { fill_solid(leds, numLeds, CRGB::Blue); }
+  // FROM(0, 0, 16.500) { fadeToBlack(); }
+  // FROM(0, 0, 18.000) { applause(); }
+  // AT(0, 0, 19.000) { FastLED.setBrightness(BRIGHTNESS / 2); }
+  // AT(0, 0, 20.000) { FastLED.setBrightness(BRIGHTNESS / 4); }
+  // AT(0, 0, 21.000) { FastLED.setBrightness(BRIGHTNESS / 8); }
+  // AT(0, 0, 22.000) { FastLED.setBrightness(BRIGHTNESS / 16); }
+  // FROM(0, 0, 23.000) { fadeToBlack(); }
+}
+
+void loop()
+{
+  if (pushbutton.update())
+  {
+    digitalWrite(WHITE_LED_PIN, LOW);
+
+    if (playSdWav1.isPlaying() == false)
+    {
+      gLastTimeCodeDoneAt = 0;
+      gLastTimeCodeDoneFrom = 0;
+      Serial.println("Start playing");
+      playSdWav1.play("test2.wav");
+      delay(10); // wait for library to parse WAV info
+    }
+  }
+
+  if (playSdWav1.isPlaying())
+  {
+    // Set the current timecode, based on when the performance started
+    gTimeCode = playSdWav1.positionMillis();
+
+    Performance();
+
+    // send the 'leds' array out to the actual LED strip
+    FastLED.show();
+    // insert a delay to keep the framerate modest
+    FastLED.delay(1000 / FRAMES_PER_SECOND);
+    // do some periodic updates
+    EVERY_N_MILLISECONDS(20) { gHue++; } // slowly cycle the "base color" through the rainbow
+  }
+  else
+  {
+    FastLED.setBrightness(0);
+    FastLED.show();
     digitalWrite(WHITE_LED_PIN, HIGH);
   }
 }
 
-void stayinAlive(){
-  if (playSdWav1.isPlaying() == false) {
-    Serial.println("Start playing");
-    playSdWav1.play("test2.wav");
-    delay(10); // wait for library to parse WAV info
-  }
-    
-  unsigned long startTime = millis();
-  Twinkle(startTime + 23180, 42);
-  fillQuarters(583, 0);
-  Twinkle(startTime + 27890, 42);
-  fillQuarters(583, 1);
-  Twinkle(startTime + 32550, 42);
-  fillQuarters(583, 2);
-  Twinkle(startTime + 37125, 42);
-  fillQuarters(583, 3);
-  Twinkle(startTime + 54000, 42);
-}
-
-// Light patches in a random color
-void Twinkle(unsigned long endTime, int SpeedDelay) {
-  colorWipeInstant(DARKWHITE);
-  int colorList[8] = {BLUE, RED, GREEN, YELLOW, ORANGE, PINK, WHITE, PASTEL4};
-  unsigned long presentTime = millis();
-  while (presentTime < endTime) {
- 
-     int pixelNumber = random(2,118);
-     int pixelColor = leds.getPixel(pixelNumber);
-
-      int newColor = colorList[random(8)]; 
-        for(int q = pixelNumber-2; q < pixelNumber+2; q++){
-          if(pixelColor == DARKWHITE){
-            leds.setPixel(q,newColor);
-
-          }
-          else {
-            leds.setPixel(q,DARKWHITE);
-          }
-        }
-     leds.show();
-     delay(SpeedDelay);
-     presentTime = millis();
-   }
-}
-
-void animateSnake(int snakeLength, int startPosition, int endPosition, bool clockwise, unsigned long endTime, int color){
-   int positionDifference = 0;
-   positionDifference = (120 + (endPosition - startPosition)) % 120;
-   if(clockwise){
-    positionDifference = positionDifference;
-   }
-   else {
-      positionDifference = 120 - positionDifference; 
-   }
-   unsigned long presentTime = millis();
-   unsigned long timeDifference = endTime - presentTime;
-   unsigned long stepTime = timeDifference / positionDifference;
-
-   int presentPosition = startPosition;
-   while(presentPosition != endPosition){
-       colorWipeInstant(BLACK);
-       for(int index = presentPosition - snakeLength; index < presentPosition; index++){
-          leds.setPixel((120 + index)%120, color); 
-       }
-       if(clockwise){
-          presentPosition = (120 + presentPosition + 1)% 120; 
-       }
-       else {
-          presentPosition = (120 + presentPosition - 1)% 120;
-       }
-       leds.show();
-       delay(stepTime);
-   }
-}
-
-void fillQuarters(int msDelay, int colorOffset){
-  int colors[8] = {WHITE, RED, GREEN, YELLOW, BLUE, PINK, ORANGE, PASTEL4};
-  colorWipeInstant(DARKWHITE);
-  int presentSide = 0;
-  int presentLed = 0;
-  while(presentLed < 120){
-      leds.setPixel(presentLed, colors[(presentSide+colorOffset)%8]);
-      if(presentLed == 35 || presentLed == 59 || presentLed == 95 || presentLed == 119 ){
-        presentSide += 1;
-        leds.show();
-        delay(msDelay);  
-      }
-      presentLed += 1;
-  }  
-}
-
-// Set all pixels to a common color
-void colorWipeInstant(int color){
-   for (int i=0; i < leds.numPixels(); i++) {
-    leds.setPixel(i, color);
-  }
-  leds.show();
-}
-
-void colorWipe(int color, int wait)
+void rainbow()
 {
-  for (int i=0; i < leds.numPixels(); i++) {
-    leds.setPixel(i, color);
-    leds.show();
-    delayMicroseconds(wait);
+  // FastLED's built-in rainbow generator
+  fill_rainbow(leds, numLeds, gHue, 7);
+}
+
+void rainbowWithGlitter()
+{
+  // built-in FastLED rainbow, plus some random sparkly glitter
+  rainbow();
+  addGlitter(80);
+}
+
+void addGlitter(fract8 chanceOfGlitter)
+{
+  if (random8() < chanceOfGlitter)
+  {
+    leds[random16(numLeds)] += CRGB::White;
   }
 }
 
-// Slowly fade in an LED
-void fadeInLED(int pin) {
-  for (int fadeValue = 0 ; fadeValue <= 255; fadeValue = fadeValue+5) {
-    analogWrite(pin, fadeValue);
-    delay(5);
+void confetti()
+{
+  // random colored speckles that blink in and fade smoothly
+  fadeToBlackBy(leds, numLeds, 10);
+  int pos = random16(numLeds);
+  leds[pos] += CHSV(gHue + random8(64), 200, 255);
+}
+
+void bpm()
+{
+  // colored stripes pulsing at a defined Beats-Per-Minute (BPM)
+  uint8_t BeatsPerMinute = 62;
+  CRGBPalette16 palette = PartyColors_p;
+  uint8_t beat = beatsin8(BeatsPerMinute, 64, 255);
+  for (int i = 0; i < numLeds; i++)
+  { // 9948
+    leds[i] = ColorFromPalette(palette, gHue + (i * 2), beat - gHue + (i * 10));
   }
-  digitalWrite(pin, HIGH);
+}
+
+void juggle()
+{
+  // eight colored dots, weaving in and out of sync with each other
+  fadeToBlackBy(leds, numLeds, 20);
+  byte dothue = 0;
+  for (int i = 0; i < 8; i++)
+  {
+    leds[beatsin16(i + 7, 0, numLeds)] |= CHSV(dothue, 200, 255);
+    dothue += 32;
+  }
+}
+
+// An animation to play while the crowd goes wild after the big performance
+void applause()
+{
+  static uint16_t lastPixel = 0;
+  fadeToBlackBy(leds, numLeds, 32);
+  leds[lastPixel] = CHSV(random8(HUE_BLUE, HUE_PURPLE), 255, 255);
+  lastPixel = random16(numLeds);
+  leds[lastPixel] = CRGB::White;
+}
+
+// An "animation" to just fade to black.  Useful as the last track
+// in a non-looping performance.
+void fadeToBlack()
+{
+  fadeToBlackBy(leds, numLeds, 1);
 }
