@@ -5,6 +5,7 @@
 #include <SD.h>
 #include <SerialFlash.h>
 #include <OctoWS2811.h>
+#include <Bounce.h>
 
 // RGB LED
 // Any group of digital pins may be used
@@ -69,9 +70,18 @@ AudioControlSGTL5000     sgtl5000_1;
 // Buzzer pin
 #define BUZZER_PIN 5
 
+Bounce pushbutton = Bounce(BUZZER_PIN, 10);  // 10 ms debounce
+
+void stayinAlive();
+void Twinkle(unsigned long endTime, int SpeedDelay);
+void animateSnake(int snakeLength, int startPosition, int endPosition, bool clockwise, unsigned long endTime, int color);
+void fillQuarters(int msDelay, int colorOffset);
+void colorWipeInstant(int color);
+void colorWipe(int color, int wait);
+void fadeInLED(int pin);
 
 void setup() {
-  // Enable white light first
+ // Enable white light first
   pinMode(WHITE_LED_PIN, OUTPUT);
   digitalWrite(WHITE_LED_PIN, HIGH);
   
@@ -98,37 +108,32 @@ void setup() {
   leds.show();
 }
 
-// mode 0: white led light
-// mode 1: rgb light
-int mode = 0;
-
-// Workaround for the buzzer beeing a toogle
-int buzzerState = LOW;
+byte active = LOW;                 // weather the 
+unsigned int count = 0;            // how many times has it changed to low
+unsigned long countAt = 0;         // when count changed
+unsigned int countPrinted = 0;     // last count printed
 
 void loop() {
-  // put your main code here, to run repeatedly:
-
-  if (mode == 0) {
+  if (active == LOW) {
     digitalWrite(WHITE_LED_PIN, HIGH);
   } else {
     digitalWrite(WHITE_LED_PIN, LOW);
     stayinAlive();
-    
+
     colorWipeInstant(BLACK);
     fadeInLED(WHITE_LED_PIN);
-    mode = 0;
+    active = LOW;
   }
 
-  if (digitalRead(BUZZER_PIN) == buzzerState) {
-    // use mode 1 when the button is pressed
-    mode = 1;
-    if (buzzerState == LOW) {
-      buzzerState = HIGH;
-    } else {
-      buzzerState = LOW;
+  if (pushbutton.update()) {
+    if (pushbutton.fallingEdge() or pushbutton.risingEdge()) {
+      if (active == LOW) {
+        active = HIGH;
+      } else {
+        active = LOW;
+      }
     }
   }
-  
 }
 
 void stayinAlive(){
