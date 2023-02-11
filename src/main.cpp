@@ -213,6 +213,7 @@ void loop()
 
     if (playSdWav1.isPlaying() == false)
     {
+      delay(1000);
       gLastTimeCodeDoneAt = 0;
       gLastTimeCodeDoneFrom = 0;
       Serial.println("Start playing");
