@@ -167,26 +167,26 @@ void Performance()
 {
   AT(0, 0, 00.001) { FastLED.setBrightness(BRIGHTNESS); }
   FROM(0, 0, 00.100) { confetti(); }
-  AT(0, 0, 23.180) { fill_solid(leds, numLeds, CRGB::Red); }
-  AT(0, 0, 23.763) { fill_solid(leds, numLeds, CRGB::Green); }
-  AT(0, 0, 24.346) { fill_solid(leds, numLeds, CRGB::Blue); }
-  AT(0, 0, 24.929) { fill_solid(leds, numLeds, CRGB::Yellow); }
+  FROM(0, 0, 23.180) { fill_solid(leds, numLeds, CRGB::Red); }
+  FROM(0, 0, 23.763) { fill_solid(leds, numLeds, CRGB::Green); }
+  FROM(0, 0, 24.346) { fill_solid(leds, numLeds, CRGB::Blue); }
+  FROM(0, 0, 24.929) { fill_solid(leds, numLeds, CRGB::Yellow); }
   FROM(0, 0, 25.512) { confetti(); }
-  AT(0, 0, 27.890) { fill_solid(leds, numLeds, CRGB::Red); }
-  AT(0, 0, 28.473) { fill_solid(leds, numLeds, CRGB::Green); }
-  AT(0, 0, 29.056) { fill_solid(leds, numLeds, CRGB::Blue); }
-  AT(0, 0, 29.639) { fill_solid(leds, numLeds, CRGB::Yellow); }
+  FROM(0, 0, 27.890) { fill_solid(leds, numLeds, CRGB::Orange); }
+  FROM(0, 0, 28.473) { fill_solid(leds, numLeds, CRGB::White); }
+  FROM(0, 0, 29.056) { fill_solid(leds, numLeds, CRGB::Blue); }
+  FROM(0, 0, 29.639) { fill_solid(leds, numLeds, CRGB::Pink); }
   FROM(0, 0, 29.722) { confetti(); }
-  AT(0, 0, 32.550) { fill_solid(leds, numLeds, CRGB::Red); }
-  AT(0, 0, 33.133) { fill_solid(leds, numLeds, CRGB::Green); }
-  AT(0, 0, 33.716) { fill_solid(leds, numLeds, CRGB::Blue); }
-  AT(0, 0, 34.299) { fill_solid(leds, numLeds, CRGB::Yellow); }
+  FROM(0, 0, 32.550) { fill_solid(leds, numLeds, CRGB::Red); }
+  FROM(0, 0, 33.133) { fill_solid(leds, numLeds, CRGB::Green); }
+  FROM(0, 0, 33.716) { fill_solid(leds, numLeds, CRGB::Blue); }
+  FROM(0, 0, 34.299) { fill_solid(leds, numLeds, CRGB::Yellow); }
   FROM(0, 0, 34.882) { confetti(); }
-  AT(0, 0, 37.125) { fill_solid(leds, numLeds, CRGB::Red); }
-  AT(0, 0, 37.708) { fill_solid(leds, numLeds, CRGB::Green); }
-  AT(0, 0, 38.291) { fill_solid(leds, numLeds, CRGB::Blue); }
-  AT(0, 0, 38.874) { fill_solid(leds, numLeds, CRGB::Yellow); }
-  FROM(0, 0, 44.707) { confetti(); }
+  FROM(0, 0, 37.125) { fill_solid(leds, numLeds, CRGB::Orange); }
+  FROM(0, 0, 37.708) { fill_solid(leds, numLeds, CRGB::White); }
+  FROM(0, 0, 38.291) { fill_solid(leds, numLeds, CRGB::Blue); }
+  FROM(0, 0, 38.874) { fill_solid(leds, numLeds, CRGB::Pink); }
+  FROM(0, 0, 39.457) { confetti(); }
   FROM(0, 0, 49.000) { fadeToBlack(); }
   // FROM(0, 0, 01.500) { juggle(); }
   // FROM(0, 0, 03.375) { rainbowWithGlitter(); }
