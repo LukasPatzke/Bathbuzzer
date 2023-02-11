@@ -5,7 +5,7 @@
 #include <SD.h>
 #include <SerialFlash.h>
 #include <OctoWS2811.h>
-#include <Bounce.h>
+#include <Bounce2.h>
 
 #define FASTLED_INTERNAL
 #include <FastLED.h>
@@ -53,7 +53,7 @@ AudioControlSGTL5000 sgtl5000_1;
 
 // Buzzer pin
 #define BUZZER_PIN 5
-Bounce pushbutton = Bounce(BUZZER_PIN, 10); // 10 ms debounce
+Bounce pushbutton = Bounce(); // 10 ms debounce
 
 #define BRIGHTNESS 96
 #define FRAMES_PER_SECOND 120
@@ -83,7 +83,8 @@ void setup()
   }
   delay(1000);
 
-  pinMode(BUZZER_PIN, INPUT_PULLUP);
+  pushbutton.attach(BUZZER_PIN, INPUT_PULLUP);
+  pushbutton.interval(10);
 
   octo.begin();
   pcontroller = new CTeensy4Controller<GRB, WS2811_800kHz>(&octo);
