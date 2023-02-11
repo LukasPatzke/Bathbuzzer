@@ -108,31 +108,13 @@ void setup() {
   leds.show();
 }
 
-byte active = LOW;                 // weather the 
-unsigned int count = 0;            // how many times has it changed to low
-unsigned long countAt = 0;         // when count changed
-unsigned int countPrinted = 0;     // last count printed
-
 void loop() {
-  if (active == LOW) {
-    digitalWrite(WHITE_LED_PIN, HIGH);
-  } else {
+  if (pushbutton.update()) {
     digitalWrite(WHITE_LED_PIN, LOW);
     stayinAlive();
 
     colorWipeInstant(BLACK);
-    fadeInLED(WHITE_LED_PIN);
-    active = LOW;
-  }
-
-  if (pushbutton.update()) {
-    if (pushbutton.fallingEdge() or pushbutton.risingEdge()) {
-      if (active == LOW) {
-        active = HIGH;
-      } else {
-        active = LOW;
-      }
-    }
+    digitalWrite(WHITE_LED_PIN, HIGH);
   }
 }
 
@@ -250,4 +232,5 @@ void fadeInLED(int pin) {
     analogWrite(pin, fadeValue);
     delay(5);
   }
+  digitalWrite(pin, HIGH);
 }
