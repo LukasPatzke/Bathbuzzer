@@ -20,6 +20,7 @@ byte pinList[numPins] = {2};
 const int ledsPerStrip = 120;
 const int numLeds = numPins * ledsPerStrip;
 CRGB leds[numLeds];
+CRGBSet ledset(leds, numLeds);
 
 // These buffers need to be large enough for all the pixels.
 // The total number of pixels is "ledsPerStrip * numPins".
@@ -137,11 +138,12 @@ static bool fromTC(uint32_t tc)
   return maybe;
 }
 
+void quaters(const CRGB &color1, const CRGB &color2, const CRGB &color3, const CRGB &color4);
 void rainbow();
 void rainbowWithGlitter();
 void addGlitter(fract8 chanceOfGlitter);
 void confetti();
-void bpm();
+void bpm(uint8_t BeatsPerMinute);
 void juggle();
 void applause();
 void fadeToBlack();
@@ -169,27 +171,27 @@ void fadeToBlack();
 void Performance()
 {
   AT(0, 0, 00.001) { FastLED.setBrightness(BRIGHTNESS); }
-  FROM(0, 0, 00.100) { confetti(); }
-  FROM(0, 0, 23.180) { fill_solid(leds, numLeds, CRGB::Red); }
-  FROM(0, 0, 23.763) { fill_solid(leds, numLeds, CRGB::Green); }
-  FROM(0, 0, 24.346) { fill_solid(leds, numLeds, CRGB::Blue); }
-  FROM(0, 0, 24.929) { fill_solid(leds, numLeds, CRGB::Yellow); }
-  FROM(0, 0, 25.512) { confetti(); }
+  FROM(0, 0, 00.100) { bpm(108); }
+  FROM(0, 0, 23.180) { quaters(CRGB::Red, CRGB::Black, CRGB::Black, CRGB::Black); }
+  FROM(0, 0, 23.763) { quaters(CRGB::Red, CRGB::Green, CRGB::Black, CRGB::Black); }
+  FROM(0, 0, 24.346) { quaters(CRGB::Red, CRGB::Green, CRGB::Blue, CRGB::Black); }
+  FROM(0, 0, 24.929) { quaters(CRGB::Red, CRGB::Green, CRGB::Blue, CRGB::Yellow); }
+  FROM(0, 0, 25.512) { bpm(108); }
   FROM(0, 0, 27.890) { fill_solid(leds, numLeds, CRGB::Orange); }
   FROM(0, 0, 28.473) { fill_solid(leds, numLeds, CRGB::White); }
   FROM(0, 0, 29.056) { fill_solid(leds, numLeds, CRGB::Blue); }
   FROM(0, 0, 29.639) { fill_solid(leds, numLeds, CRGB::Pink); }
-  FROM(0, 0, 29.722) { confetti(); }
+  FROM(0, 0, 29.722) { bpm(108); }
   FROM(0, 0, 32.550) { fill_solid(leds, numLeds, CRGB::Red); }
   FROM(0, 0, 33.133) { fill_solid(leds, numLeds, CRGB::Green); }
   FROM(0, 0, 33.716) { fill_solid(leds, numLeds, CRGB::Blue); }
   FROM(0, 0, 34.299) { fill_solid(leds, numLeds, CRGB::Yellow); }
-  FROM(0, 0, 34.882) { confetti(); }
+  FROM(0, 0, 34.882) { bpm(108); }
   FROM(0, 0, 37.125) { fill_solid(leds, numLeds, CRGB::Orange); }
   FROM(0, 0, 37.708) { fill_solid(leds, numLeds, CRGB::White); }
   FROM(0, 0, 38.291) { fill_solid(leds, numLeds, CRGB::Blue); }
   FROM(0, 0, 38.874) { fill_solid(leds, numLeds, CRGB::Pink); }
-  FROM(0, 0, 39.457) { confetti(); }
+  FROM(0, 0, 39.457) { bpm(108); }
   FROM(0, 0, 49.000) { fadeToBlack(); }
   // FROM(0, 0, 01.500) { juggle(); }
   // FROM(0, 0, 03.375) { rainbowWithGlitter(); }
@@ -247,6 +249,14 @@ void loop()
   }
 }
 
+void quaters(const CRGB &color1, const CRGB &color2, const CRGB &color3, const CRGB &color4)
+{
+  fill_solid(ledset(0,35), 36, color1);
+  fill_solid(ledset(36,59), 24, color2);
+  fill_solid(ledset(60,95), 36, color3);
+  fill_solid(ledset(96,119), 24, color4);
+}
+
 void rainbow()
 {
   // FastLED's built-in rainbow generator
@@ -276,10 +286,9 @@ void confetti()
   leds[pos] += CHSV(gHue + random8(64), 200, 255);
 }
 
-void bpm()
+void bpm(uint8_t BeatsPerMinute)
 {
   // colored stripes pulsing at a defined Beats-Per-Minute (BPM)
-  uint8_t BeatsPerMinute = 62;
   CRGBPalette16 palette = PartyColors_p;
   uint8_t beat = beatsin8(BeatsPerMinute, 64, 255);
   for (int i = 0; i < numLeds; i++)
