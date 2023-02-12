@@ -11,6 +11,7 @@
 #include <FastLED.h>
 
 #include "CTeensy4Controller.h"
+#include "BeatDetector.h"
 
 // RGB LED
 // Any group of digital pins may be used
@@ -39,10 +40,17 @@ CTeensy4Controller<GRB, WS2811_800kHz> *pcontroller;
 
 // Audio Player
 AudioPlaySdWav playSdWav1;
+AudioMixer4 mixer1;
+AudioAnalyzeFFT256 fft256_1;
 AudioOutputI2S i2s1;
 AudioConnection patchCord1(playSdWav1, 0, i2s1, 0);
-AudioConnection patchCord2(playSdWav1, 1, i2s1, 1);
+AudioConnection patchCord2(playSdWav1, 0, mixer1, 0);
+AudioConnection patchCord3(playSdWav1, 1, i2s1, 1);
+AudioConnection patchCord4(playSdWav1, 1, mixer1, 1);
+AudioConnection patchCord5(mixer1, fft256_1);
 AudioControlSGTL5000 sgtl5000_1;
+
+BeatDetector beatDetector(fft256_1);
 
 // Use these with the Teensy Audio Shield
 #define SDCARD_CS_PIN 10
@@ -57,7 +65,7 @@ AudioControlSGTL5000 sgtl5000_1;
 Bounce pushbutton = Bounce();
 
 #define BRIGHTNESS 96
-#define FRAMES_PER_SECOND 120
+#define FRAMES_PER_SECOND 240
 
 void setup()
 {
@@ -66,6 +74,15 @@ void setup()
   digitalWrite(WHITE_LED_PIN, HIGH);
 
   Serial.begin(9600);
+
+  // set gains of stereo to mono mixer
+  // I think it needs to be .5 to prevent clipping
+  mixer1.gain(0, 0.5);
+  mixer1.gain(1, 0.5);
+  mixer1.gain(2, 0);
+  mixer1.gain(3, 0);
+  fft256_1.averageTogether(3); // I this gives me about 115 samples per second
+
   AudioMemory(8);
   sgtl5000_1.enable();
   sgtl5000_1.volume(0.5);
@@ -97,8 +114,6 @@ void setup()
 }
 
 uint8_t gHue = 0; // rotating "base color" used by many of the patterns
-
-uint32_t gTimeCode = 0;
 uint32_t gLastTimeCodeDoneAt = 0;
 uint32_t gLastTimeCodeDoneFrom = 0;
 
@@ -113,7 +128,7 @@ uint32_t gLastTimeCodeDoneFrom = 0;
 static bool atTC(uint32_t tc)
 {
   bool maybe = false;
-  if (gTimeCode >= tc)
+  if (playSdWav1.positionMillis() >= tc)
   {
     if (gLastTimeCodeDoneAt < tc)
     {
@@ -127,7 +142,7 @@ static bool atTC(uint32_t tc)
 static bool fromTC(uint32_t tc)
 {
   bool maybe = false;
-  if (gTimeCode >= tc)
+  if (playSdWav1.positionMillis() >= tc)
   {
     if (gLastTimeCodeDoneFrom <= tc)
     {
@@ -139,6 +154,7 @@ static bool fromTC(uint32_t tc)
 }
 
 void quaters(const CRGB &color1, const CRGB &color2, const CRGB &color3, const CRGB &color4);
+void pulsing();
 void rainbow();
 void rainbowWithGlitter();
 void addGlitter(fract8 chanceOfGlitter);
@@ -171,28 +187,28 @@ void fadeToBlack();
 void Performance()
 {
   AT(0, 0, 00.001) { FastLED.setBrightness(BRIGHTNESS); }
-  FROM(0, 0, 00.100) { bpm(108); }
+  FROM(0, 0, 00.128) { bpm(104); }
   FROM(0, 0, 23.180) { quaters(CRGB::Red, CRGB::Black, CRGB::Black, CRGB::Black); }
   FROM(0, 0, 23.763) { quaters(CRGB::Red, CRGB::Green, CRGB::Black, CRGB::Black); }
   FROM(0, 0, 24.346) { quaters(CRGB::Red, CRGB::Green, CRGB::Blue, CRGB::Black); }
   FROM(0, 0, 24.929) { quaters(CRGB::Red, CRGB::Green, CRGB::Blue, CRGB::Yellow); }
-  FROM(0, 0, 25.512) { bpm(108); }
+  FROM(0, 0, 25.512) { pulsing(); }
   FROM(0, 0, 27.890) { fill_solid(leds, numLeds, CRGB::Orange); }
   FROM(0, 0, 28.473) { fill_solid(leds, numLeds, CRGB::White); }
   FROM(0, 0, 29.056) { fill_solid(leds, numLeds, CRGB::Blue); }
   FROM(0, 0, 29.639) { fill_solid(leds, numLeds, CRGB::Pink); }
-  FROM(0, 0, 29.722) { bpm(108); }
-  FROM(0, 0, 32.550) { fill_solid(leds, numLeds, CRGB::Red); }
-  FROM(0, 0, 33.133) { fill_solid(leds, numLeds, CRGB::Green); }
-  FROM(0, 0, 33.716) { fill_solid(leds, numLeds, CRGB::Blue); }
-  FROM(0, 0, 34.299) { fill_solid(leds, numLeds, CRGB::Yellow); }
-  FROM(0, 0, 34.882) { bpm(108); }
+  FROM(0, 0, 29.722) { pulsing(); }
+  FROM(0, 0, 32.550) { quaters(CRGB::Red, CRGB::Black, CRGB::Black, CRGB::Black); }
+  FROM(0, 0, 33.133) { quaters(CRGB::Red, CRGB::Green, CRGB::Black, CRGB::Black); }
+  FROM(0, 0, 33.716) { quaters(CRGB::Red, CRGB::Green, CRGB::Blue, CRGB::Black); }
+  FROM(0, 0, 34.299) { quaters(CRGB::Red, CRGB::Green, CRGB::Blue, CRGB::Yellow); }
+  FROM(0, 0, 34.882) { pulsing(); }
   FROM(0, 0, 37.125) { fill_solid(leds, numLeds, CRGB::Orange); }
   FROM(0, 0, 37.708) { fill_solid(leds, numLeds, CRGB::White); }
   FROM(0, 0, 38.291) { fill_solid(leds, numLeds, CRGB::Blue); }
   FROM(0, 0, 38.874) { fill_solid(leds, numLeds, CRGB::Pink); }
-  FROM(0, 0, 39.457) { bpm(108); }
-  FROM(0, 0, 49.000) { fadeToBlack(); }
+  FROM(0, 0, 39.457) { bpm(104); }
+  FROM(0, 0, 49.000) { fadeToBlackBy(leds, numLeds, 1); }
   // FROM(0, 0, 01.500) { juggle(); }
   // FROM(0, 0, 03.375) { rainbowWithGlitter(); }
   // FROM(0, 0, 04.333) { bpm(); }
@@ -229,8 +245,7 @@ void loop()
 
   if (playSdWav1.isPlaying())
   {
-    // Set the current timecode, based on when the performance started
-    gTimeCode = playSdWav1.positionMillis();
+    beatDetector.BeatDetectorLoop();
 
     Performance();
 
@@ -251,10 +266,10 @@ void loop()
 
 void quaters(const CRGB &color1, const CRGB &color2, const CRGB &color3, const CRGB &color4)
 {
-  fill_solid(ledset(0,35), 36, color1);
-  fill_solid(ledset(36,59), 24, color2);
-  fill_solid(ledset(60,95), 36, color3);
-  fill_solid(ledset(96,119), 24, color4);
+  fill_solid(ledset(0, 35), 36, color1);
+  fill_solid(ledset(36, 59), 24, color2);
+  fill_solid(ledset(60, 95), 36, color3);
+  fill_solid(ledset(96, 119), 24, color4);
 }
 
 void rainbow()
@@ -284,6 +299,19 @@ void confetti()
   fadeToBlackBy(leds, numLeds, 10);
   int pos = random16(numLeds);
   leds[pos] += CHSV(gHue + random8(64), 200, 255);
+}
+
+void pulsing()
+{
+  CRGBPalette16 palette = PartyColors_p;
+  fadeToBlackBy(leds, numLeds, 1);
+  if (beatDetector.virtualBeat)
+  {
+    for (int i = 0; i < numLeds; i++)
+    { // 9948
+      leds[i] = ColorFromPalette(palette, gHue + (i * 2), gHue + (i * 10));
+    }
+  }
 }
 
 void bpm(uint8_t BeatsPerMinute)
