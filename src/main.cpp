@@ -53,7 +53,7 @@ AudioControlSGTL5000 sgtl5000_1;
 
 // Buzzer pin
 #define BUZZER_PIN 5
-Bounce pushbutton = Bounce(); // 10 ms debounce
+Bounce pushbutton = Bounce();
 
 #define BRIGHTNESS 96
 #define FRAMES_PER_SECOND 120
@@ -83,7 +83,9 @@ void setup()
   }
   delay(1000);
 
-  pushbutton.attach(BUZZER_PIN, INPUT_PULLUP);
+  pinMode(BUZZER_PIN, INPUT_PULLUP);
+  delay(1000);
+  pushbutton.attach(BUZZER_PIN);
   pushbutton.interval(10);
 
   octo.begin();
