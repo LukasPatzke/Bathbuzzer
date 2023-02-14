@@ -323,6 +323,7 @@ void loop()
 
     if (playSdWav1.isPlaying() == false)
     {
+      gCurrentPatternNumber = (gCurrentPatternNumber + 1) % 2;
       delay(1000);
       gLastTimeCodeDoneAt = 0;
       gLastTimeCodeDoneFrom = 0;
@@ -435,7 +436,7 @@ void flashSingle(const CRGB &color1, const CRGB &color2, const CRGB &color3, con
   uint8_t beat = beatsin8(3, 64, 255);
   fadeToBlackBy(leds, NUM_LEDS, 5);
   if(beat < 1){
-    quarters(color1, color2, color3, color4)
+    quarters(color1, color2, color3, color4);
   }
 }
 
