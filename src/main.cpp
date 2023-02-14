@@ -161,7 +161,7 @@ void addGlitter(fract8 chanceOfGlitter);
 void confetti();
 void bpm(uint8_t BeatsPerMinute);
 void juggle();
-void applause();
+void applause(uint8_t width);
 void fadeToBlack();
 void twoDots();
 void fillAndCC();
@@ -220,6 +220,74 @@ void StayinAlive()
   FROM(0, 0, 49.800) { fadeToBlackBy(leds, NUM_LEDS, 1); }
 }
 
+void RamaLama()
+{
+  AT(0, 0, 00.001) { FastLED.setBrightness(BRIGHTNESS); }
+  
+  // Rama Lam
+  FROM(0, 0, 00.100) { quarters(CRGB::Black, CRGB::Black, CRGB::Black, CRGB::Black); }
+  // Ding Dong
+  FROM(0, 0, 00.629) { quarters(CRGB::LawnGreen, CRGB::Black, CRGB::LawnGreen, CRGB::Black); }
+  FROM(0, 0, 01.085) { quarters(CRGB::Black, CRGB::Salmon, CRGB::Black, CRGB::Salmon); }
+
+  // Rama Lam
+  FROM(0, 0, 01.587) { quarters(CRGB::Black, CRGB::Black, CRGB::Black, CRGB::Black); }
+  // Ding Ding Dong
+  FROM(0, 0, 02.604) { quarters(CRGB::Salmon, CRGB::Black, CRGB::Black, CRGB::Black); }
+  FROM(0, 0, 02.860) { quarters(CRGB::Salmon, CRGB::Black, CRGB::Salmon, CRGB::Black); }
+  FROM(0, 0, 03.094) { quarters(CRGB::Black, CRGB::LawnGreen, CRGB::Black, CRGB::LawnGreen); }
+
+  // Ramalamalamalamalamadingdong Ramalamalamalamalamading
+  FROM(0, 0, 03.621) { quarters(CRGB::Black, CRGB::Black, CRGB::Black, CRGB::Black); }
+  // Uhuh Uhuhuh Uhuhuhuh Uhuhuhuhuhuhu
+  FROM(0, 0, 07.454) { bpm(127); }
+  // Uuuuh Aaaaah
+  FROM(0, 0, 18.880) { bpm(254); }
+  // Ah.
+  FROM(0, 0, 20.730) { quarters(CRGB::Black, CRGB::Black, CRGB::Black, CRGB::Black); }
+
+  // O ohoh ohoh ohoh
+  FROM(0, 0, 21.228) { quarters(CRGB::Red, CRGB::Black, CRGB::Black, CRGB::Black); }
+  FROM(0, 0, 21.702) { quarters(CRGB::Red, CRGB::Green, CRGB::Black, CRGB::Black); }
+  FROM(0, 0, 22.304) { quarters(CRGB::Red, CRGB::Green, CRGB::Blue, CRGB::Black); }
+
+  // Ive got a girl named
+  FROM(0, 0, 22.610) { bpm(127); }
+
+  // Rama Lama Lama Lama
+  FROM(0, 0, 24.731) { applause(5); }
+  // Ding Dong
+  FROM(0, 0, 25.968) { quarters(CRGB::Red, CRGB::Black, CRGB::Black, CRGB::Black); }
+  FROM(0, 0, 26.187) { quarters(CRGB::Black, CRGB::Black, CRGB::Red, CRGB::Black); }
+  // She said a thing to me
+  FROM(0, 0, 26.450) { bpm(127); }
+  // Rama Lama Lama Lama
+  FROM(0, 0, 28.5) { applause(5); }
+  // Ding Dong
+  FROM(0, 0, 29.742) { quarters(CRGB::Black, CRGB::Green, CRGB::Black, CRGB::Black); }
+  FROM(0, 0, 30.013) { quarters(CRGB::Black, CRGB::Black, CRGB::Black, CRGB::Green); }
+
+  // I never set her free, cause shes mine oh 
+  FROM(0, 0, 30.261) { bpm(127); }
+  // Miiiiine
+  FROM(0, 0, 33.985) { applause(1); }
+  // Uuuuuuha aaaaaaaah 
+
+  FROM(0, 0, 33.985) { applause(1); }
+  AT(0, 0, 36) { FastLED.setBrightness(BRIGHTNESS / 2); }
+  FROM(0, 0, 36) { applause(2); }
+  AT(0, 0, 37) { FastLED.setBrightness(BRIGHTNESS / 4); }
+  FROM(0, 0, 37) { applause(3); }
+  AT(0, 0, 38) { FastLED.setBrightness(BRIGHTNESS / 6); }
+  FROM(0, 0, 38) { applause(4); }
+  AT(0, 0, 39) { FastLED.setBrightness(BRIGHTNESS / 8); }
+  AT(0, 0, 40) { FastLED.setBrightness(BRIGHTNESS / 10); }
+  FROM(0, 0, 40) { applause(5); }
+  ROM(0, 0, 40.5) { fadeToBlackBy(leds, NUM_LEDS, 1); }
+  
+  //aaaaaaaaah
+}
+
 void Demo()
 {
   AT(0, 0, 00.001) { FastLED.setBrightness(BRIGHTNESS); }
@@ -232,7 +300,7 @@ void Demo()
   AT(0, 0, 12.000) { fill_solid(leds, NUM_LEDS, CRGB::Red); }
   AT(0, 0, 15.000) { fill_solid(leds, NUM_LEDS, CRGB::Blue); }
   FROM(0, 0, 16.500) { fadeToBlack(); }
-  FROM(0, 0, 18.000) { applause(); }
+  FROM(0, 0, 18.000) { applause(1); }
   AT(0, 0, 19.000) { FastLED.setBrightness(BRIGHTNESS / 2); }
   AT(0, 0, 20.000) { FastLED.setBrightness(BRIGHTNESS / 4); }
   AT(0, 0, 21.000) { FastLED.setBrightness(BRIGHTNESS / 8); }
@@ -242,7 +310,8 @@ void Demo()
 
 // List of patterns to cycle through.
 typedef void (*SimplePatternList[])();
-SimplePatternList gPatterns = { twoDots, fillAndCC, blinkyblink2, spewFour, spew, rainbow, confetti, sinelon, juggle };
+SimplePatternList gPatterns = { RamaLama, StayinAlive };
+string gFilenames[2] = ["test2.wav", "rldd.wav"]
 
 uint8_t gCurrentPatternNumber = 0; // Index number of which pattern is current
 
@@ -258,22 +327,17 @@ void loop()
       gLastTimeCodeDoneAt = 0;
       gLastTimeCodeDoneFrom = 0;
       Serial.println("Start playing");
-      playSdWav1.play("test2.wav");
+      playSdWav1.play(gFilenames[gCurrentPatternNumber]);
       delay(10); // wait for library to parse WAV info
-    } else
-    {
-      // add one to the current pattern number, and wrap around at the end
-      gCurrentPatternNumber = (gCurrentPatternNumber + 1) % sizeof(gPatterns);
-    }
-    
+    }     
   }
 
   if (playSdWav1.isPlaying())
   {
     beatDetector.BeatDetectorLoop();
 
-    StayinAlive();
-    //gPatterns[gCurrentPatternNumber]();
+    //StayinAlive();
+    gPatterns[gCurrentPatternNumber]();
 
     // send the 'leds' array out to the actual LED strip
     FastLED.show();
@@ -364,13 +428,23 @@ void juggle()
 }
 
 // An animation to play while the crowd goes wild after the big performance
-void applause()
+void applause(uint8_t width)
 {
   static uint16_t lastPixel = 0;
+  static uint8_t hue = random8(HUE_BLUE, HUE_PURPLE)
   fadeToBlackBy(leds, NUM_LEDS, 32);
-  leds[lastPixel] = CHSV(random8(HUE_BLUE, HUE_PURPLE), 255, 255);
+  for (int i = 0; i <= width; i++)
+  {
+    leds[(lastPixel + i) % NUM_LEDS] = CHSV(hue, 255, 255);
+    leds[(lastPixel + NUM_LEDS - i) % NUM_LEDS] = CHSV(hue, 255, 255);
+  }
+  
   lastPixel = random16(NUM_LEDS);
-  leds[lastPixel] = CRGB::White;
+  for (int i = 0; i <= width; i++)
+  {
+    leds[(lastPixel + i) % NUM_LEDS] = CRGB::White;
+    leds[(lastPixel + NUM_LEDS - i) % NUM_LEDS] = CRGB::White;
+  }
 }
 
 // An "animation" to just fade to black.  Useful as the last track
