@@ -170,7 +170,7 @@ void blinkyblink2();
 void spewFour();
 void spew();
 void sinelon();
-void flashAtBpm(uint8_t BeatsPerMinute, uint8_t hue);
+void flashAtBpm(uint8_t BeatsPerMinute, CHSV hue);
 void wiggleLines(uint8_t BeatsPerMinute);
 
 
@@ -227,12 +227,12 @@ void Astro() {
   
   FROM(0, 0, 00.012) { quarters(CRGB::Black, CRGB::Black, CRGB::Black, CRGB::Black); }
 
-  FROM(0, 0, 01.100) { flashAtBpm(127, CHSV(gHue, 0, 255)) }
-  FROM(0, 0, 05.454) { wiggleLines(127) }
-  FROM(0, 0, 06.669) { flashAtBpm(127, CHSV(gHue, 0, 255)) }
-  FROM(0, 0, 07.348) { wiggleLines(127) }
-  FROM(0, 0, 08.560) { flashAtBpm(127, CHSV(gHue, 200, 255)) }
-  FROM(0, 0, 13.086) { wiggleLines(127) }
+  FROM(0, 0, 01.100) { flashAtBpm(127, CHSV(gHue, 0, 254)); }
+  FROM(0, 0, 05.454) { wiggleLines(127); }
+  FROM(0, 0, 06.669) { flashAtBpm(127, CHSV(gHue, 0, 254)); }
+  FROM(0, 0, 07.348) { wiggleLines(127); }
+  FROM(0, 0, 08.560) { flashAtBpm(127, CHSV(gHue, 200, 254)); }
+  FROM(0, 0, 13.086) { wiggleLines(127); }
 }
 
 void RamaLama()
@@ -326,7 +326,7 @@ void Demo()
 // List of patterns to cycle through.
 typedef void (*SimplePatternList[])();
 SimplePatternList gPatterns = { RamaLama, StayinAlive, Astro };
-char* gFilenames[2] = {"rldd.wav", "test2.wav", "astro.wav"};
+char* gFilenames[3] = { "rldd.wav", "test2.wav", "astro.wav" };
 
 uint8_t gCurrentPatternNumber = 2; // Index number of which pattern is current
 
