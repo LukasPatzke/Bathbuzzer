@@ -169,7 +169,7 @@ void blinkyblink2();
 void spewFour();
 void spew();
 void sinelon();
-
+void flashAtBpm(uint8_t BeatsPerMinute, uint8_t hue);
 
 
 // There are two kinds of things you can put into this performance:
@@ -225,65 +225,65 @@ void RamaLama()
   AT(0, 0, 00.001) { FastLED.setBrightness(BRIGHTNESS); }
   
   // Rama Lam
-  FROM(0, 0, 00.100) { quarters(CRGB::Black, CRGB::Black, CRGB::Black, CRGB::Black); }
+  FROM(0, 0, 01.100) { quarters(CRGB::Black, CRGB::Black, CRGB::Black, CRGB::Black); }
   // Ding Dong
-  FROM(0, 0, 00.629) { quarters(CRGB::LawnGreen, CRGB::Black, CRGB::LawnGreen, CRGB::Black); }
-  FROM(0, 0, 01.085) { quarters(CRGB::Black, CRGB::Salmon, CRGB::Black, CRGB::Salmon); }
+  FROM(0, 0, 01.629) { quarters(CRGB::LawnGreen, CRGB::Black, CRGB::LawnGreen, CRGB::Black); }
+  FROM(0, 0, 02.085) { quarters(CRGB::Black, CRGB::Salmon, CRGB::Black, CRGB::Salmon); }
 
   // Rama Lam
-  FROM(0, 0, 01.587) { quarters(CRGB::Black, CRGB::Black, CRGB::Black, CRGB::Black); }
+  FROM(0, 0, 02.587) { quarters(CRGB::Black, CRGB::Black, CRGB::Black, CRGB::Black); }
   // Ding Ding Dong
-  FROM(0, 0, 02.604) { quarters(CRGB::Salmon, CRGB::Black, CRGB::Black, CRGB::Black); }
-  FROM(0, 0, 02.860) { quarters(CRGB::Salmon, CRGB::Black, CRGB::Salmon, CRGB::Black); }
-  FROM(0, 0, 03.094) { quarters(CRGB::Black, CRGB::LawnGreen, CRGB::Black, CRGB::LawnGreen); }
+  FROM(0, 0, 03.604) { quarters(CRGB::Salmon, CRGB::Black, CRGB::Black, CRGB::Black); }
+  FROM(0, 0, 03.860) { quarters(CRGB::Salmon, CRGB::Black, CRGB::Salmon, CRGB::Black); }
+  FROM(0, 0, 04.094) { quarters(CRGB::Black, CRGB::LawnGreen, CRGB::Black, CRGB::LawnGreen); }
 
   // Ramalamalamalamalamadingdong Ramalamalamalamalamading
-  FROM(0, 0, 03.621) { quarters(CRGB::Black, CRGB::Black, CRGB::Black, CRGB::Black); }
+  FROM(0, 0, 04.621) { quarters(CRGB::Black, CRGB::Black, CRGB::Black, CRGB::Black); }
   // Uhuh Uhuhuh Uhuhuhuh Uhuhuhuhuhuhu
-  FROM(0, 0, 07.454) { bpm(127); }
+  FROM(0, 0, 08.454) { bpm(127); }
   // Uuuuh Aaaaah
-  FROM(0, 0, 18.880) { bpm(254); }
+  FROM(0, 0, 19.880) { bpm(254); }
   // Ah.
-  FROM(0, 0, 20.730) { quarters(CRGB::Black, CRGB::Black, CRGB::Black, CRGB::Black); }
+  FROM(0, 0, 21.730) { quarters(CRGB::Black, CRGB::Black, CRGB::Black, CRGB::Black); }
 
   // O ohoh ohoh ohoh
-  FROM(0, 0, 21.228) { quarters(CRGB::Red, CRGB::Black, CRGB::Black, CRGB::Black); }
-  FROM(0, 0, 21.702) { quarters(CRGB::Red, CRGB::Green, CRGB::Black, CRGB::Black); }
-  FROM(0, 0, 22.304) { quarters(CRGB::Red, CRGB::Green, CRGB::Blue, CRGB::Black); }
+  FROM(0, 0, 22.228) { quarters(CRGB::Red, CRGB::Black, CRGB::Black, CRGB::Black); }
+  FROM(0, 0, 22.702) { quarters(CRGB::Red, CRGB::Green, CRGB::Black, CRGB::Black); }
+  FROM(0, 0, 23.304) { quarters(CRGB::Red, CRGB::Green, CRGB::Blue, CRGB::Black); }
 
   // Ive got a girl named
-  FROM(0, 0, 22.610) { bpm(127); }
+  FROM(0, 0, 23.610) { bpm(127); }
 
   // Rama Lama Lama Lama
-  FROM(0, 0, 24.731) { applause(5); }
+  FROM(0, 0, 25.731) { applause(5); }
   // Ding Dong
-  FROM(0, 0, 25.968) { quarters(CRGB::Red, CRGB::Black, CRGB::Black, CRGB::Black); }
-  FROM(0, 0, 26.187) { quarters(CRGB::Black, CRGB::Black, CRGB::Red, CRGB::Black); }
+  FROM(0, 0, 26.968) { quarters(CRGB::Red, CRGB::Black, CRGB::Black, CRGB::Black); }
+  FROM(0, 0, 27.187) { quarters(CRGB::Black, CRGB::Black, CRGB::Red, CRGB::Black); }
   // She said a thing to me
-  FROM(0, 0, 26.450) { bpm(127); }
+  FROM(0, 0, 27.450) { bpm(127); }
   // Rama Lama Lama Lama
-  FROM(0, 0, 28.5) { applause(5); }
+  FROM(0, 0, 29.5) { applause(5); }
   // Ding Dong
-  FROM(0, 0, 29.742) { quarters(CRGB::Black, CRGB::Green, CRGB::Black, CRGB::Black); }
-  FROM(0, 0, 30.013) { quarters(CRGB::Black, CRGB::Black, CRGB::Black, CRGB::Green); }
+  FROM(0, 0, 30.742) { quarters(CRGB::Black, CRGB::Green, CRGB::Black, CRGB::Black); }
+  FROM(0, 0, 31.013) { quarters(CRGB::Black, CRGB::Black, CRGB::Black, CRGB::Green); }
 
   // I never set her free, cause shes mine oh 
-  FROM(0, 0, 30.261) { bpm(127); }
+  FROM(0, 0, 31.261) { bpm(127); }
   // Miiiiine
-  FROM(0, 0, 33.985) { applause(1); }
+  FROM(0, 0, 34.985) { applause(1); }
   // Uuuuuuha aaaaaaaah 
 
-  FROM(0, 0, 33.985) { applause(1); }
-  AT(0, 0, 36) { FastLED.setBrightness(BRIGHTNESS / 2); }
-  FROM(0, 0, 36) { applause(2); }
-  AT(0, 0, 37) { FastLED.setBrightness(BRIGHTNESS / 4); }
-  FROM(0, 0, 37) { applause(3); }
-  AT(0, 0, 38) { FastLED.setBrightness(BRIGHTNESS / 6); }
-  FROM(0, 0, 38) { applause(4); }
-  AT(0, 0, 39) { FastLED.setBrightness(BRIGHTNESS / 8); }
-  AT(0, 0, 40) { FastLED.setBrightness(BRIGHTNESS / 10); }
-  FROM(0, 0, 40) { applause(5); }
-  FROM(0, 0, 40.5) { fadeToBlackBy(leds, NUM_LEDS, 1); }
+  FROM(0, 0, 34.985) { applause(1); }
+  AT(0, 0, 37) { FastLED.setBrightness(BRIGHTNESS / 2); }
+  FROM(0, 0, 37) { applause(2); }
+  AT(0, 0, 38) { FastLED.setBrightness(BRIGHTNESS / 4); }
+  FROM(0, 0, 38) { applause(3); }
+  AT(0, 0, 39) { FastLED.setBrightness(BRIGHTNESS / 6); }
+  FROM(0, 0, 39) { applause(4); }
+  AT(0, 0, 40) { FastLED.setBrightness(BRIGHTNESS / 8); }
+  AT(0, 0, 41) { FastLED.setBrightness(BRIGHTNESS / 10); }
+  FROM(0, 0, 41) { applause(5); }
+  FROM(0, 0, 41.5) { fadeToBlackBy(leds, NUM_LEDS, 1); }
   
   //aaaaaaaaah
 }
@@ -414,6 +414,31 @@ void bpm(uint8_t BeatsPerMinute)
     leds[i] = ColorFromPalette(palette, gHue + (i * 2), beat - gHue + (i * 10));
   }
 }
+
+void flashAtBpm(uint8_t BeatsPerMinute, uint8_t hue)
+{
+  // Everything pulsing at hue in beat
+  CRGBPalette16 palette = PartyColors_p;
+  fadeToBlackBy(leds, NUM_LEDS, 5);
+  uint8_t beat = beatsin8(BeatsPerMinute, 64, 255);
+  if (beat > 250)
+  {
+    for (int i = 0; i < NUM_LEDS; i++)
+    {
+      leds[i] = ColorFromPalette(palette, hue, 255);
+    }
+  }
+}
+
+void flashSingle(const CRGB &color1, const CRGB &color2, const CRGB &color3, const CRGB &color4)
+{
+  uint8_t beat = beatsin8(3, 64, 255);
+  fadeToBlackBy(leds, NUM_LEDS, 5);
+  if(beat < 1){
+    quarters(color1, color2, color3, color4)
+  }
+}
+
 
 void juggle()
 {
