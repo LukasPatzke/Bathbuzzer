@@ -283,7 +283,7 @@ void RamaLama()
   AT(0, 0, 39) { FastLED.setBrightness(BRIGHTNESS / 8); }
   AT(0, 0, 40) { FastLED.setBrightness(BRIGHTNESS / 10); }
   FROM(0, 0, 40) { applause(5); }
-  ROM(0, 0, 40.5) { fadeToBlackBy(leds, NUM_LEDS, 1); }
+  FROM(0, 0, 40.5) { fadeToBlackBy(leds, NUM_LEDS, 1); }
   
   //aaaaaaaaah
 }
@@ -311,7 +311,7 @@ void Demo()
 // List of patterns to cycle through.
 typedef void (*SimplePatternList[])();
 SimplePatternList gPatterns = { RamaLama, StayinAlive };
-string gFilenames[2] = ["test2.wav", "rldd.wav"]
+char* gFilenames[2] = {"rldd.wav", "test2.wav"};
 
 uint8_t gCurrentPatternNumber = 0; // Index number of which pattern is current
 
@@ -431,7 +431,7 @@ void juggle()
 void applause(uint8_t width)
 {
   static uint16_t lastPixel = 0;
-  static uint8_t hue = random8(HUE_BLUE, HUE_PURPLE)
+  static uint8_t hue = random8(HUE_BLUE, HUE_PURPLE);
   fadeToBlackBy(leds, NUM_LEDS, 32);
   for (int i = 0; i <= width; i++)
   {
