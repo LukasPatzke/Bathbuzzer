@@ -233,6 +233,13 @@ void Astro() {
   FROM(0, 0, 07.348) { wiggleLines(127); }
   FROM(0, 0, 08.560) { flashAtBpm(127, CHSV(gHue, 200, 254)); }
   FROM(0, 0, 13.086) { wiggleLines(127); }
+  FROM(0, 0, 16.203) { flashAtBpm(127, CHSV(gHue, 0, 254)); }
+  FROM(0, 0, 20.697) { wiggleLines(127); }
+  FROM(0, 0, 21.898) { flashAtBpm(127, CHSV(gHue, 0, 254)); }
+  FROM(0, 0, 22.595) { wiggleLines(127); }
+  FROM(0, 0, 23.803) { flashAtBpm(254, CHSV(2 * gHue, 0, 254)); }
+  FROM(0, 0, 30.375) { fill_solid(leds, NUM_LEDS, CRGB::White); }
+  FROM(0, 0, 30.8) { fadeToBlackBy(leds, NUM_LEDS, 1); }
 }
 
 void RamaLama()
@@ -456,7 +463,7 @@ void flashAtBpm(uint8_t BeatsPerMinute, CHSV hsv)
   CRGBPalette16 palette = PartyColors_p;
   fadeToBlackBy(leds, NUM_LEDS, 5);
   uint8_t beat = beatsin8(BeatsPerMinute, 64, 255);
-  if (beat > 250)
+  if (beat < 67)
   {
     for (int i = 0; i < NUM_LEDS; i++)
     {
