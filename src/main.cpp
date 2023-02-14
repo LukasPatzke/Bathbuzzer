@@ -13,6 +13,7 @@
 #include "CTeensy4Controller.h"
 #include "BeatDetector.h"
 
+
 // RGB LED
 // Any group of digital pins may be used
 const int numPins = 1;
@@ -170,6 +171,7 @@ void spewFour();
 void spew();
 void sinelon();
 void flashAtBpm(uint8_t BeatsPerMinute, uint8_t hue);
+void wiggleLines(uint8_t BeatsPerMinute);
 
 
 // There are two kinds of things you can put into this performance:
@@ -218,6 +220,19 @@ void StayinAlive()
   FROM(0, 0, 39.457) { pulsing(); }
   //FROM(0, 0, 39.457) { bpm(103); }
   FROM(0, 0, 49.800) { fadeToBlackBy(leds, NUM_LEDS, 1); }
+}
+
+void Astro() {
+  AT(0, 0, 00.001) { FastLED.setBrightness(BRIGHTNESS); }
+  
+  FROM(0, 0, 00.012) { quarters(CRGB::Black, CRGB::Black, CRGB::Black, CRGB::Black); }
+
+  FROM(0, 0, 01.100) { flashAtBpm(127, CHSV(gHue, 0, 255)) }
+  FROM(0, 0, 05.454) { wiggleLines(127) }
+  FROM(0, 0, 06.669) { flashAtBpm(127, CHSV(gHue, 0, 255)) }
+  FROM(0, 0, 07.348) { wiggleLines(127) }
+  FROM(0, 0, 08.560) { flashAtBpm(127, CHSV(gHue, 200, 255)) }
+  FROM(0, 0, 13.086) { wiggleLines(127) }
 }
 
 void RamaLama()
@@ -310,10 +325,10 @@ void Demo()
 
 // List of patterns to cycle through.
 typedef void (*SimplePatternList[])();
-SimplePatternList gPatterns = { RamaLama, StayinAlive };
-char* gFilenames[2] = {"rldd.wav", "test2.wav"};
+SimplePatternList gPatterns = { RamaLama, StayinAlive, Astro };
+char* gFilenames[2] = {"rldd.wav", "test2.wav", "astro.wav"};
 
-uint8_t gCurrentPatternNumber = 0; // Index number of which pattern is current
+uint8_t gCurrentPatternNumber = 2; // Index number of which pattern is current
 
 void loop()
 {
@@ -323,7 +338,7 @@ void loop()
 
     if (playSdWav1.isPlaying() == false)
     {
-      gCurrentPatternNumber = (gCurrentPatternNumber + 1) % 2;
+      gCurrentPatternNumber = (gCurrentPatternNumber + 1) % 3;
       delay(1000);
       gLastTimeCodeDoneAt = 0;
       gLastTimeCodeDoneFrom = 0;
@@ -416,7 +431,26 @@ void bpm(uint8_t BeatsPerMinute)
   }
 }
 
-void flashAtBpm(uint8_t BeatsPerMinute, uint8_t hue)
+void wiggleLines(uint8_t BeatsPerMinute) {
+  int linelength = 10;
+  int moving_distance = 40;
+  int start_value = 30;
+  uint8_t beat = beatsin8(BeatsPerMinute, start_value, start_value + moving_distance);
+  
+  CRGBPalette16 palette = PartyColors_p;
+  fill_solid(leds, NUM_LEDS, CRGB::Black);
+  for (int i = 0; i < 0.5 * NUM_LEDS; i++)
+  {
+    if((beat - i) < linelength && (beat - i) > -linelength){
+      leds[i] = ColorFromPalette(palette, gHue, 255 - (10*abs(beat - i)));
+      int otherIndex = (0.5 * NUM_LEDS) + i;
+      leds[otherIndex] = ColorFromPalette(palette, gHue, 255 - (10*abs(beat - i)));
+    }
+    
+  }
+}
+
+void flashAtBpm(uint8_t BeatsPerMinute, CHSV hsv)
 {
   // Everything pulsing at hue in beat
   CRGBPalette16 palette = PartyColors_p;
@@ -426,7 +460,7 @@ void flashAtBpm(uint8_t BeatsPerMinute, uint8_t hue)
   {
     for (int i = 0; i < NUM_LEDS; i++)
     {
-      leds[i] = ColorFromPalette(palette, hue, 255);
+      leds[i] = hsv;
     }
   }
 }
