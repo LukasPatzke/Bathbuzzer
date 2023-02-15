@@ -13,7 +13,6 @@
 #include "CTeensy4Controller.h"
 #include "BeatDetector.h"
 
-
 // RGB LED
 // Any group of digital pins may be used
 const int numPins = 1;
@@ -172,7 +171,7 @@ void spew();
 void sinelon();
 void flashAtBpm(uint8_t BeatsPerMinute, CHSV hue);
 void wiggleLines(uint8_t BeatsPerMinute);
-
+void singleFlashAT(uint32_t seconds, CRGB color);
 
 // There are two kinds of things you can put into this performance:
 // "FROM" and "AT".
@@ -218,34 +217,67 @@ void StayinAlive()
   FROM(0, 0, 38.291) { fill_solid(leds, NUM_LEDS, CRGB::Blue); }
   FROM(0, 0, 38.874) { fill_solid(leds, NUM_LEDS, CRGB::Pink); }
   FROM(0, 0, 39.457) { pulsing(); }
-  //FROM(0, 0, 39.457) { bpm(103); }
+  // FROM(0, 0, 39.457) { bpm(103); }
   FROM(0, 0, 49.800) { fadeToBlackBy(leds, NUM_LEDS, 1); }
 }
 
-void Astro() {
+void Astro()
+{
   AT(0, 0, 00.001) { FastLED.setBrightness(BRIGHTNESS); }
-  
+
   FROM(0, 0, 00.012) { quarters(CRGB::Black, CRGB::Black, CRGB::Black, CRGB::Black); }
 
-  FROM(0, 0, 01.100) { flashAtBpm(127, CHSV(gHue, 0, 254)); }
+  singleFlashAT(0.985, CRGB::Blue);
+  singleFlashAT(1.460, CRGB::Green);
+  singleFlashAT(1.936, CRGB::Yellow);
+  singleFlashAT(2.412, CRGB::White);
+  singleFlashAT(2.887, CRGB::Blue);
+  singleFlashAT(3.364, CRGB::Green);
+  singleFlashAT(3.840, CRGB::Yellow);
+  singleFlashAT(4.316, CRGB::White);
+  singleFlashAT(4.793, CRGB::Red);
+  singleFlashAT(5.272, CRGB::White);
   FROM(0, 0, 05.454) { wiggleLines(127); }
-  FROM(0, 0, 06.669) { flashAtBpm(127, CHSV(gHue, 0, 254)); }
+  singleFlashAT(6.694, CRGB::White);
+  singleFlashAT(7.172, CRGB::White);
   FROM(0, 0, 07.348) { wiggleLines(127); }
-  FROM(0, 0, 08.560) { flashAtBpm(127, CHSV(gHue, 200, 254)); }
+  singleFlashAT(8.603, CRGB::White);
+  singleFlashAT(9.075, CRGB::White);
+  singleFlashAT(9.549, CRGB::Blue);
+  singleFlashAT(10.027, CRGB::Green);
+  singleFlashAT(10.505, CRGB::Red);
+  singleFlashAT(10.981, CRGB::White);
+  singleFlashAT(11.458, CRGB::Yellow);
+  singleFlashAT(11.936, CRGB::White);
+  singleFlashAT(12.410, CRGB::Yellow);
+  singleFlashAT(12.90, CRGB::White);
   FROM(0, 0, 13.086) { wiggleLines(127); }
-  FROM(0, 0, 16.203) { flashAtBpm(127, CHSV(gHue, 0, 254)); }
+  singleFlashAT(14.316, CRGB::White);
+  singleFlashAT(14.790, CRGB::White);
+  FROM(0, 0, 14.982) { wiggleLines(127); }
+  singleFlashAT(16.216, CRGB::White);
+  singleFlashAT(16.697, CRGB::White);
+  singleFlashAT(17.174, CRGB::Red);
+  singleFlashAT(17.648, CRGB::Green);
+  singleFlashAT(18.123, CRGB::Red);
+  singleFlashAT(18.599, CRGB::Green);
+  singleFlashAT(19.077, CRGB::White);
+  singleFlashAT(19.554, CRGB::Blue);
+  singleFlashAT(20.028, CRGB::White);
+  singleFlashAT(20.503, CRGB::Blue);
   FROM(0, 0, 20.697) { wiggleLines(127); }
-  FROM(0, 0, 21.898) { flashAtBpm(127, CHSV(gHue, 0, 254)); }
-  FROM(0, 0, 22.595) { wiggleLines(127); }
-  FROM(0, 0, 23.803) { flashAtBpm(254, CHSV(2 * gHue, 0, 254)); }
-  FROM(0, 0, 30.375) { fill_solid(leds, NUM_LEDS, CRGB::White); }
+  singleFlashAT(21.936, CRGB::White);
+  singleFlashAT(22.410, CRGB::White);
+  FROM(0, 0, 22.622) { wiggleLines(127); }
+  FROM(0,0,23.837){ applause(1); }
+  singleFlashAT(30.215, CRGB::White);
   FROM(0, 0, 30.8) { fadeToBlackBy(leds, NUM_LEDS, 1); }
 }
 
 void RamaLama()
 {
   AT(0, 0, 00.001) { FastLED.setBrightness(BRIGHTNESS); }
-  
+
   // Rama Lam
   FROM(0, 0, 01.100) { quarters(CRGB::Black, CRGB::Black, CRGB::Black, CRGB::Black); }
   // Ding Dong
@@ -289,11 +321,11 @@ void RamaLama()
   FROM(0, 0, 30.742) { quarters(CRGB::Black, CRGB::Green, CRGB::Black, CRGB::Black); }
   FROM(0, 0, 31.013) { quarters(CRGB::Black, CRGB::Black, CRGB::Black, CRGB::Green); }
 
-  // I never set her free, cause shes mine oh 
+  // I never set her free, cause shes mine oh
   FROM(0, 0, 31.261) { bpm(127); }
   // Miiiiine
   FROM(0, 0, 34.985) { applause(1); }
-  // Uuuuuuha aaaaaaaah 
+  // Uuuuuuha aaaaaaaah
 
   FROM(0, 0, 34.985) { applause(1); }
   AT(0, 0, 37) { FastLED.setBrightness(BRIGHTNESS / 2); }
@@ -306,8 +338,8 @@ void RamaLama()
   AT(0, 0, 41) { FastLED.setBrightness(BRIGHTNESS / 10); }
   FROM(0, 0, 41) { applause(5); }
   FROM(0, 0, 41.5) { fadeToBlackBy(leds, NUM_LEDS, 1); }
-  
-  //aaaaaaaaah
+
+  // aaaaaaaaah
 }
 
 void Demo()
@@ -332,8 +364,8 @@ void Demo()
 
 // List of patterns to cycle through.
 typedef void (*SimplePatternList[])();
-SimplePatternList gPatterns = { RamaLama, StayinAlive, Astro };
-char* gFilenames[3] = { "rldd.wav", "test2.wav", "astro.wav" };
+SimplePatternList gPatterns = {RamaLama, StayinAlive, Astro};
+char *gFilenames[3] = {"rldd.wav", "test2.wav", "astro.wav"};
 
 uint8_t gCurrentPatternNumber = 2; // Index number of which pattern is current
 
@@ -352,14 +384,14 @@ void loop()
       Serial.println("Start playing");
       playSdWav1.play(gFilenames[gCurrentPatternNumber]);
       delay(10); // wait for library to parse WAV info
-    }     
+    }
   }
 
   if (playSdWav1.isPlaying())
   {
     beatDetector.BeatDetectorLoop();
 
-    //StayinAlive();
+    // StayinAlive();
     gPatterns[gCurrentPatternNumber]();
 
     // send the 'leds' array out to the actual LED strip
@@ -427,6 +459,12 @@ void pulsing()
   }
 }
 
+void singleFlashAT(uint32_t seconds, CRGB color)
+{
+  AT(0, 0, seconds) { fill_solid(leds, NUM_LEDS, color); }
+  FROM(0, 0, seconds + 0.005) { fadeToBlackBy(leds, NUM_LEDS, 2); }
+}
+
 void bpm(uint8_t BeatsPerMinute)
 {
   // colored stripes pulsing at a defined Beats-Per-Minute (BPM)
@@ -438,22 +476,23 @@ void bpm(uint8_t BeatsPerMinute)
   }
 }
 
-void wiggleLines(uint8_t BeatsPerMinute) {
+void wiggleLines(uint8_t BeatsPerMinute)
+{
   int linelength = 10;
   int moving_distance = 40;
   int start_value = 30;
   uint8_t beat = beatsin8(BeatsPerMinute, start_value, start_value + moving_distance);
-  
+
   CRGBPalette16 palette = PartyColors_p;
   fill_solid(leds, NUM_LEDS, CRGB::Black);
   for (int i = 0; i < 0.5 * NUM_LEDS; i++)
   {
-    if((beat - i) < linelength && (beat - i) > -linelength){
-      leds[i] = ColorFromPalette(palette, gHue, 255 - (10*abs(beat - i)));
+    if ((beat - i) < linelength && (beat - i) > -linelength)
+    {
+      leds[i] = ColorFromPalette(palette, gHue, 255 - (10 * abs(beat - i)));
       int otherIndex = (0.5 * NUM_LEDS) + i;
-      leds[otherIndex] = ColorFromPalette(palette, gHue, 255 - (10*abs(beat - i)));
+      leds[otherIndex] = ColorFromPalette(palette, gHue, 255 - (10 * abs(beat - i)));
     }
-    
   }
 }
 
@@ -476,11 +515,11 @@ void flashSingle(const CRGB &color1, const CRGB &color2, const CRGB &color3, con
 {
   uint8_t beat = beatsin8(3, 64, 255);
   fadeToBlackBy(leds, NUM_LEDS, 5);
-  if(beat < 1){
+  if (beat < 1)
+  {
     quarters(color1, color2, color3, color4);
   }
 }
-
 
 void juggle()
 {
@@ -505,7 +544,7 @@ void applause(uint8_t width)
     leds[(lastPixel + i) % NUM_LEDS] = CHSV(hue, 255, 255);
     leds[(lastPixel + NUM_LEDS - i) % NUM_LEDS] = CHSV(hue, 255, 255);
   }
-  
+
   lastPixel = random16(NUM_LEDS);
   for (int i = 0; i <= width; i++)
   {
@@ -525,179 +564,240 @@ void fadeToBlack()
 void sinelon()
 {
   // a colored dot sweeping back and forth, with fading trails
-  fadeToBlackBy( leds, NUM_LEDS, 12);
-  int pos = beatsin16( 13, 0, NUM_LEDS-1 );
-  leds[pos] += CHSV( gHue, 255, 192);
+  fadeToBlackBy(leds, NUM_LEDS, 12);
+  int pos = beatsin16(13, 0, NUM_LEDS - 1);
+  leds[pos] += CHSV(gHue, 255, 192);
 }
 
 /////////////////////////
-void spew() {
-  const uint16_t spewSpeed = 100;  // rate of advance
-  static boolean spewing = 0;  // pixels are On(1) or Off(0)
-  static uint8_t count = 1;  // how many to light (or not light)
+void spew()
+{
+  const uint16_t spewSpeed = 100; // rate of advance
+  static boolean spewing = 0;     // pixels are On(1) or Off(0)
+  static uint8_t count = 1;       // how many to light (or not light)
   static uint8_t temp = count;
   static uint8_t hue = random8();
-  EVERY_N_MILLISECONDS(spewSpeed){
-    if (count == 0) {
+  EVERY_N_MILLISECONDS(spewSpeed)
+  {
+    if (count == 0)
+    {
       spewing = !spewing;
-      if (spewing == 1) { count = random8(2,5); }  // random number for On pixels
-      else { count = random8(1,8); }  // random number for Off pixels
+      if (spewing == 1)
+      {
+        count = random8(2, 5);
+      } // random number for On pixels
+      else
+      {
+        count = random8(1, 8);
+      } // random number for Off pixels
       temp = count;
-      //gHue = gHue - 30;
+      // gHue = gHue - 30;
       hue = random8();
     }
-    for (uint8_t i = NUM_LEDS-1; i > 0; i--) {
-      leds[i] = leds[i-1];  // shift data down the line by one pixel
+    for (uint8_t i = NUM_LEDS - 1; i > 0; i--)
+    {
+      leds[i] = leds[i - 1]; // shift data down the line by one pixel
     }
-    if (spewing == 1) {  // new pixels are On
-      if (temp == count) {
-        leds[0] = CHSV(hue-5, 215, 255);  // for first dot
-        //leds[0] = CHSV(gHue-5, 215, 255);  // for first dot
-      } else {
-        leds[0] = CHSV(hue, 255, 255/(1+((temp-count)*2)) );  // for following dots
-        //leds[0] = CHSV(gHue, 255, 255/(1+((temp-count)*2)) );  // for following dots
+    if (spewing == 1)
+    { // new pixels are On
+      if (temp == count)
+      {
+        leds[0] = CHSV(hue - 5, 215, 255); // for first dot
+        // leds[0] = CHSV(gHue-5, 215, 255);  // for first dot
       }
-    } else {  // new pixels are Off
-      leds[0] = CHSV(0,0,0);  // set pixel 0 to black
+      else
+      {
+        leds[0] = CHSV(hue, 255, 255 / (1 + ((temp - count) * 2))); // for following dots
+        // leds[0] = CHSV(gHue, 255, 255/(1+((temp-count)*2)) );  // for following dots
+      }
     }
-    count = count - 1;  // reduce count by one.
-  }//end every_n
-}//end spew
+    else
+    {                          // new pixels are Off
+      leds[0] = CHSV(0, 0, 0); // set pixel 0 to black
+    }
+    count = count - 1; // reduce count by one.
+  }                    // end every_n
+} // end spew
 
 //////////////////////////
-void spewFour() {
-  //Similar to the abouve "spew", but split up into four sections,
-  //specifically designed for a 8x4 matrix with Z-layout.
-  const uint16_t spewSpeed = 100;  // rate of advance
-  static uint8_t spewing[4] = {0,0,0,0};  // pixels are On(1) or Off(0)
-  static uint8_t count[4] = {1,1,1,1};  // how many to light (or not light)
-  static uint8_t temp[4] = {count[0],count[1],count[2],count[3]};
+void spewFour()
+{
+  // Similar to the abouve "spew", but split up into four sections,
+  // specifically designed for a 8x4 matrix with Z-layout.
+  const uint16_t spewSpeed = 100;           // rate of advance
+  static uint8_t spewing[4] = {0, 0, 0, 0}; // pixels are On(1) or Off(0)
+  static uint8_t count[4] = {1, 1, 1, 1};   // how many to light (or not light)
+  static uint8_t temp[4] = {count[0], count[1], count[2], count[3]};
   static uint8_t hue[4] = {random8(), random8(), random8(), random8()};
-  EVERY_N_MILLISECONDS(spewSpeed){
-    for (uint8_t j=0; j<4; j++) {
-      if (count[j] == 0) {
-        if (spewing[j] == 0) {
+  EVERY_N_MILLISECONDS(spewSpeed)
+  {
+    for (uint8_t j = 0; j < 4; j++)
+    {
+      if (count[j] == 0)
+      {
+        if (spewing[j] == 0)
+        {
           spewing[j] = 1;
-        } else {
+        }
+        else
+        {
           spewing[j] = 0;
         }
-        if (spewing[j] == 1) { count[j] = random8(2,5); }  // random number for On pixels
-        else { count[j] = random8(1,8); }  // random number for Off pixels
+        if (spewing[j] == 1)
+        {
+          count[j] = random8(2, 5);
+        } // random number for On pixels
+        else
+        {
+          count[j] = random8(1, 8);
+        } // random number for Off pixels
         temp[j] = count[j];
-        EVERY_N_SECONDS(2){  // hue going across is constant for awhile
+        EVERY_N_SECONDS(2)
+        { // hue going across is constant for awhile
           hue[j] = random8();
         }
       }
-      for (uint8_t i = 7; i > 0; i--) {
-        leds[(j*8)+i] = leds[(j*8)+i-1];  // shift data down the line by one pixel
+      for (uint8_t i = 7; i > 0; i--)
+      {
+        leds[(j * 8) + i] = leds[(j * 8) + i - 1]; // shift data down the line by one pixel
       }
-      if (spewing[j] == 1) {  // new pixels are On
-        if (temp[j] == count[j]) {
-          leds[((j+1)*8)-8] = CHSV(hue[j]-5, 215, 255);  // for first dot
-        } else {
-          leds[((j+1)*8)-8] = CHSV(hue[j], 255, 255/(1+((temp[j]-count[j])*2)) );  // for following dots
+      if (spewing[j] == 1)
+      { // new pixels are On
+        if (temp[j] == count[j])
+        {
+          leds[((j + 1) * 8) - 8] = CHSV(hue[j] - 5, 215, 255); // for first dot
         }
-      } else {  // new pixels are Off
-        leds[((j+1)*8)-8] = CHSV(0,0,0);  // set pixel 0 to black
+        else
+        {
+          leds[((j + 1) * 8) - 8] = CHSV(hue[j], 255, 255 / (1 + ((temp[j] - count[j]) * 2))); // for following dots
+        }
       }
-      count[j] = count[j] - 1;  // reduce count by one.
-    }//end for loop
-  }//end every_n
-}//end spewFour
-
+      else
+      {                                          // new pixels are Off
+        leds[((j + 1) * 8) - 8] = CHSV(0, 0, 0); // set pixel 0 to black
+      }
+      count[j] = count[j] - 1; // reduce count by one.
+    }                          // end for loop
+  }                            // end every_n
+} // end spewFour
 
 //////////////////////////
-void blinkyblink1() {
+void blinkyblink1()
+{
   static boolean dataIncoming = LOW;
   static boolean blinkGate1 = LOW;
   static boolean blinkGate2 = HIGH;
   static int8_t count = -1;
 
-  EVERY_N_MILLISECONDS_I( timingObj, 250 ) {
+  EVERY_N_MILLISECONDS_I(timingObj, 250)
+  {
     count++;
-    if (count == 6) { count = 0; }
+    if (count == 6)
+    {
+      count = 0;
+    }
     blinkGate2 = count;
     dataIncoming = !dataIncoming;
     blinkGate1 = !blinkGate1;
-    //Serial.print("c: "); Serial.print(count); Serial.print("\t");
-    //Serial.print(dataIncoming); Serial.print("  "); Serial.print(blinkGate1);
-    //Serial.print("\t"); Serial.print(dataIncoming * blinkGate1 * 255 * blinkGate2);
-    //Serial.print("\tb: "); Serial.print(blinkGate2); Serial.println(" ");
+    // Serial.print("c: "); Serial.print(count); Serial.print("\t");
+    // Serial.print(dataIncoming); Serial.print("  "); Serial.print(blinkGate1);
+    // Serial.print("\t"); Serial.print(dataIncoming * blinkGate1 * 255 * blinkGate2);
+    // Serial.print("\tb: "); Serial.print(blinkGate2); Serial.println(" ");
     FastLED.clear();
-    leds[0] = CHSV(gHue,0,dataIncoming*blinkGate1*255 * blinkGate2);
-    if (count == 2 || count == 3) {
-      timingObj.setPeriod( 50 );
-    } else if (count == 4) {
-      timingObj.setPeriod( 405 );
-    } else {
-      timingObj.setPeriod( 165 );
+    leds[0] = CHSV(gHue, 0, dataIncoming * blinkGate1 * 255 * blinkGate2);
+    if (count == 2 || count == 3)
+    {
+      timingObj.setPeriod(50);
+    }
+    else if (count == 4)
+    {
+      timingObj.setPeriod(405);
+    }
+    else
+    {
+      timingObj.setPeriod(165);
     }
   }
-}//end_blinkyblink1
-
+} // end_blinkyblink1
 
 //////////////////////////
-void blinkyblink2() {
+void blinkyblink2()
+{
   static boolean dataIncoming = LOW;
   static boolean blinkGate1 = LOW;
   static boolean blinkGate2 = HIGH;
   static int8_t count = -1;
   static int8_t P;
 
-  EVERY_N_MILLISECONDS_I( timingObj, 250 ) {
+  EVERY_N_MILLISECONDS_I(timingObj, 250)
+  {
     count++;
-    if (count == 8) {
+    if (count == 8)
+    {
       count = 0;
       P = random8(NUM_LEDS);
     }
     blinkGate2 = count;
     dataIncoming = !dataIncoming;
     blinkGate1 = !blinkGate1;
-    //Serial.print("c: "); Serial.print(count); Serial.print("\t");
-    //Serial.print(dataIncoming); Serial.print("  "); Serial.print(blinkGate1);
-    //Serial.print("\t"); Serial.print(dataIncoming * blinkGate1 * 255 * blinkGate2);
-    //Serial.print("\tb: "); Serial.print(blinkGate2); Serial.println(" ");
+    // Serial.print("c: "); Serial.print(count); Serial.print("\t");
+    // Serial.print(dataIncoming); Serial.print("  "); Serial.print(blinkGate1);
+    // Serial.print("\t"); Serial.print(dataIncoming * blinkGate1 * 255 * blinkGate2);
+    // Serial.print("\tb: "); Serial.print(blinkGate2); Serial.println(" ");
     FastLED.clear();
-    leds[P] = CHSV(gHue,255,dataIncoming*blinkGate1*255 * blinkGate2);
-    if (count == 6) {
-      timingObj.setPeriod( 250 );
-    } else if (count == 7) {
-      timingObj.setPeriod( 500 );
-    } else {
-      timingObj.setPeriod( 25 );
+    leds[P] = CHSV(gHue, 255, dataIncoming * blinkGate1 * 255 * blinkGate2);
+    if (count == 6)
+    {
+      timingObj.setPeriod(250);
+    }
+    else if (count == 7)
+    {
+      timingObj.setPeriod(500);
+    }
+    else
+    {
+      timingObj.setPeriod(25);
     }
   }
-}//end_blinkyblink2
-
+} // end_blinkyblink2
 
 //////////////////////////
-void fillAndCC() {
+void fillAndCC()
+{
   static int16_t pos = 0;  // position along strip
-  static int8_t delta = 3;  // delta (can be negative, and/or odd numbers)
+  static int8_t delta = 3; // delta (can be negative, and/or odd numbers)
   static uint8_t hue = 0;  // hue to display
-  EVERY_N_MILLISECONDS(50) {
-    leds[pos] = CHSV(hue,255,255);
+  EVERY_N_MILLISECONDS(50)
+  {
+    leds[pos] = CHSV(hue, 255, 255);
     pos = (pos + delta + NUM_LEDS) % NUM_LEDS;
-    if (delta >= 0 && pos == 0) {  //going forward
-      hue = hue + random8(42,128);
+    if (delta >= 0 && pos == 0)
+    { // going forward
+      hue = hue + random8(42, 128);
     }
-    if (delta < 0 && pos == NUM_LEDS-1) {  //going backward
-      hue = hue + random8(42,128);
+    if (delta < 0 && pos == NUM_LEDS - 1)
+    { // going backward
+      hue = hue + random8(42, 128);
     }
   }
-}//fillAndCC
+} // fillAndCC
 
 //////////////////////////
-void twoDots() {
-  static uint8_t pos;  //used to keep track of position
-  EVERY_N_MILLISECONDS(70) {
-    fadeToBlackBy( leds, NUM_LEDS, 200);  //fade all the pixels some
-    leds[pos] = CHSV(gHue, random8(170,230), 255);
-    leds[(pos+5) % NUM_LEDS] = CHSV(gHue+64, random8(170,230), 255);
-    pos = pos + 1;  //advance position
-    
-    //This following check is very important.  Do not go past the last pixel!
-    if (pos == NUM_LEDS) { pos = 0; }  //reset to beginning
-    //Trying to write data to non-existent pixels causes bad things.
+void twoDots()
+{
+  static uint8_t pos; // used to keep track of position
+  EVERY_N_MILLISECONDS(70)
+  {
+    fadeToBlackBy(leds, NUM_LEDS, 200); // fade all the pixels some
+    leds[pos] = CHSV(gHue, random8(170, 230), 255);
+    leds[(pos + 5) % NUM_LEDS] = CHSV(gHue + 64, random8(170, 230), 255);
+    pos = pos + 1; // advance position
+
+    // This following check is very important.  Do not go past the last pixel!
+    if (pos == NUM_LEDS)
+    {
+      pos = 0;
+    } // reset to beginning
+    // Trying to write data to non-existent pixels causes bad things.
   }
-}//end_twoDots
+} // end_twoDots
