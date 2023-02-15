@@ -228,19 +228,20 @@ void Astro()
 
   FROM(0, 0, 00.012) { quarters(CRGB::Black, CRGB::Black, CRGB::Black, CRGB::Black); }
 
-  flashPulsing();
+  FROM(0, 0, 0.983) { flashPulsing();}
   FROM(0, 0, 05.454) { wiggleLines(127); }
-  flashPulsing();
+  FROM(0, 0, 06.604) { flashPulsing();}
   FROM(0, 0, 07.348) { wiggleLines(127); }
-  flashPulsing();
+  FROM(0, 0, 08.546) { flashPulsing();}
   FROM(0, 0, 13.086) { wiggleLines(127); }
-  flashPulsing();
+  FROM(0, 0, 14.276) { flashPulsing();}
   FROM(0, 0, 14.982) { wiggleLines(127); }
-  flashPulsing();
+  FROM(0, 0, 16.189) { flashPulsing();}
   FROM(0, 0, 20.697) { wiggleLines(127); }
-  flashPulsing();
+  FROM(0, 0, 21.983) { flashPulsing();}
   FROM(0, 0, 22.622) { wiggleLines(127); }
-  FROM(0,0,23.837){ applause(1); }
+  FROM(0, 0, 23.8) { flashPulsing();}
+  FROM(0,0,27.454){ applause(1); }
   singleFlashAT(30.215, CRGB::White);
   FROM(0, 0, 30.8) { fadeToBlackBy(leds, NUM_LEDS, 1); }
 }
