@@ -348,7 +348,7 @@ void loop()
 
     if (playSdWav1.isPlaying() == false)
     {
-      gCurrentPatternNumber = (gCurrentPatternNumber + 1) % 3;
+      //gCurrentPatternNumber = (gCurrentPatternNumber + 1) % 3;
       delay(1000);
       gLastTimeCodeDoneAt = 0;
       gLastTimeCodeDoneFrom = 0;
