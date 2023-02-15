@@ -172,6 +172,7 @@ void sinelon();
 void flashAtBpm(uint8_t BeatsPerMinute, CHSV hue);
 void wiggleLines(uint8_t BeatsPerMinute);
 void singleFlashAT(uint32_t seconds, CRGB color);
+void flashPulsing();
 
 // There are two kinds of things you can put into this performance:
 // "FROM" and "AT".
@@ -227,47 +228,17 @@ void Astro()
 
   FROM(0, 0, 00.012) { quarters(CRGB::Black, CRGB::Black, CRGB::Black, CRGB::Black); }
 
-  singleFlashAT(0.985, CRGB::Blue);
-  singleFlashAT(1.460, CRGB::Green);
-  singleFlashAT(1.936, CRGB::Yellow);
-  singleFlashAT(2.412, CRGB::White);
-  singleFlashAT(2.887, CRGB::Blue);
-  singleFlashAT(3.364, CRGB::Green);
-  singleFlashAT(3.840, CRGB::Yellow);
-  singleFlashAT(4.316, CRGB::White);
-  singleFlashAT(4.793, CRGB::Red);
-  singleFlashAT(5.272, CRGB::White);
+  flashPulsing();
   FROM(0, 0, 05.454) { wiggleLines(127); }
-  singleFlashAT(6.694, CRGB::White);
-  singleFlashAT(7.172, CRGB::White);
+  flashPulsing();
   FROM(0, 0, 07.348) { wiggleLines(127); }
-  singleFlashAT(8.603, CRGB::White);
-  singleFlashAT(9.075, CRGB::White);
-  singleFlashAT(9.549, CRGB::Blue);
-  singleFlashAT(10.027, CRGB::Green);
-  singleFlashAT(10.505, CRGB::Red);
-  singleFlashAT(10.981, CRGB::White);
-  singleFlashAT(11.458, CRGB::Yellow);
-  singleFlashAT(11.936, CRGB::White);
-  singleFlashAT(12.410, CRGB::Yellow);
-  singleFlashAT(12.90, CRGB::White);
+  flashPulsing();
   FROM(0, 0, 13.086) { wiggleLines(127); }
-  singleFlashAT(14.316, CRGB::White);
-  singleFlashAT(14.790, CRGB::White);
+  flashPulsing();
   FROM(0, 0, 14.982) { wiggleLines(127); }
-  singleFlashAT(16.216, CRGB::White);
-  singleFlashAT(16.697, CRGB::White);
-  singleFlashAT(17.174, CRGB::Red);
-  singleFlashAT(17.648, CRGB::Green);
-  singleFlashAT(18.123, CRGB::Red);
-  singleFlashAT(18.599, CRGB::Green);
-  singleFlashAT(19.077, CRGB::White);
-  singleFlashAT(19.554, CRGB::Blue);
-  singleFlashAT(20.028, CRGB::White);
-  singleFlashAT(20.503, CRGB::Blue);
+  flashPulsing();
   FROM(0, 0, 20.697) { wiggleLines(127); }
-  singleFlashAT(21.936, CRGB::White);
-  singleFlashAT(22.410, CRGB::White);
+  flashPulsing();
   FROM(0, 0, 22.622) { wiggleLines(127); }
   FROM(0,0,23.837){ applause(1); }
   singleFlashAT(30.215, CRGB::White);
@@ -444,6 +415,19 @@ void confetti()
   fadeToBlackBy(leds, NUM_LEDS, 10);
   int pos = random16(NUM_LEDS);
   leds[pos] += CHSV(gHue + random8(64), 200, 255);
+}
+
+void flashPulsing()
+{
+  CRGBPalette16 palette = PartyColors_p;
+  fadeToBlackBy(leds, NUM_LEDS, 1);
+  if (beatDetector.virtualBeat)
+  {
+    for (int i = 0; i < NUM_LEDS; i++)
+    {
+      leds[i] = CRGB::White;
+    }
+  }
 }
 
 void pulsing()
