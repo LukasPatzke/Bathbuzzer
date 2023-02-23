@@ -421,7 +421,7 @@ void confetti()
 void flashPulsing()
 {
   CRGBPalette16 palette = PartyColors_p;
-  fadeToBlackBy(leds, NUM_LEDS, 1);
+  fadeToBlackBy(leds, NUM_LEDS, 8);
   if (beatDetector.virtualBeat)
   {
     for (int i = 0; i < NUM_LEDS; i++)
