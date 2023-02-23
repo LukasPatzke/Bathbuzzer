@@ -172,6 +172,7 @@ void flashAtBpm(uint8_t BeatsPerMinute, CHSV hue);
 void wiggleLines(uint8_t BeatsPerMinute);
 void singleFlashAT(uint32_t seconds, CRGB color);
 void flashPulsing();
+void fillGradual(uint8_t BeatsPerMinute);
 
 // There are two kinds of things you can put into this performance:
 // "FROM" and "AT".
@@ -219,6 +220,48 @@ void StayinAlive()
   FROM(0, 0, 39.457) { pulsing(); }
   // FROM(0, 0, 39.457) { bpm(103); }
   FROM(0, 0, 49.800) { fadeToBlackBy(leds, NUM_LEDS, 1); }
+}
+
+void Celebrate() {
+  AT(0, 0, 00.001) { FastLED.setBrightness(BRIGHTNESS); }
+  FROM(0, 0, 00.012) { quarters(CRGB::Black, CRGB::Black, CRGB::Black, CRGB::Black); }
+
+  FROM(0, 0, 1.06) { bpm(120);}
+  FROM(0, 0, 5.620) { fillGradual(30);}
+  FROM(0, 0, 7.149) { bpm(120);}
+
+  FROM(0, 0, 9.175) { quarters(CRGB::Salmon, CRGB::Black, CRGB::Black, CRGB::Black);}
+  FROM(0, 0, 9.667) { quarters(CRGB::Black, CRGB::Black, CRGB::Blue, CRGB::Black);}
+  FROM(0, 0, 10.185) { quarters(CRGB::Black, CRGB::Green, CRGB::Black, CRGB::Black);}
+  FROM(0, 0, 10.677) { quarters(CRGB::Black, CRGB::Black, CRGB::Black, CRGB::Orange);}
+
+  FROM(0, 0, 11.185) { quarters(CRGB::Black, CRGB::Salmon, CRGB::Black, CRGB::Black);}
+  FROM(0, 0, 11.435) { quarters(CRGB::Black, CRGB::Salmon, CRGB::Azure, CRGB::Black);}
+  FROM(0, 0, 11.682) { quarters(CRGB::Lime, CRGB::Salmon, CRGB::Azure, CRGB::Black);}
+  FROM(0, 0, 11.938) { quarters(CRGB::Lime, CRGB::Salmon, CRGB::Azure, CRGB::Orange);}
+
+  FROM(0, 0, 13.222) { bpm(120);}
+  FROM(0,0,16.471) { flashPulsing(); }
+
+  FROM(0, 0, 17.220) { bpm(120);}
+  FROM(0, 0, 20.704) { wiggleLines(60);}
+
+  FROM(0, 0, 21.692) { bpm(120);}
+
+  FROM(0, 0, 25.188) { quarters(CRGB::Salmon, CRGB::Black, CRGB::Black, CRGB::Black);}
+  FROM(0, 0, 25.667) { quarters(CRGB::Black, CRGB::Black, CRGB::Blue, CRGB::Black);}
+  FROM(0, 0, 26.185) { quarters(CRGB::Black, CRGB::Green, CRGB::Black, CRGB::Black);}
+  FROM(0, 0, 26.677) { quarters(CRGB::Black, CRGB::Black, CRGB::Black, CRGB::Orange);}
+
+  FROM(0, 0, 27.185) { quarters(CRGB::Black, CRGB::Salmon, CRGB::Black, CRGB::Black);}
+  FROM(0, 0, 27.435) { quarters(CRGB::Black, CRGB::Salmon, CRGB::Azure, CRGB::Black);}
+  FROM(0, 0, 27.682) { quarters(CRGB::Lime, CRGB::Salmon, CRGB::Azure, CRGB::Black);}
+  FROM(0, 0, 27.938) { quarters(CRGB::Lime, CRGB::Salmon, CRGB::Azure, CRGB::Orange);}
+
+  FROM(0, 0, 28.645) { wiggleLines(60);}
+
+  FROM(0, 0, 29.644) { bpm(120);}
+  FROM(0, 0, 46.5) { fadeToBlackBy(leds, NUM_LEDS, 1); }
 }
 
 void Astro()
@@ -335,11 +378,11 @@ void Demo()
 
 // List of patterns to cycle through.
 typedef void (*SimplePatternList[])();
-SimplePatternList gPatterns = {RamaLama, StayinAlive, Astro};
-char *gFilenames[3] = {"rldd.wav", "test2.wav", "astro.wav"};
-const uint8_t gNumberOfPatterns = 3;
+SimplePatternList gPatterns = {RamaLama, StayinAlive, Astro, Celebrate};
+char *gFilenames[4] = {"rldd.wav", "test2.wav", "astro.wav", "seleb.wav"};
+const uint8_t gNumberOfPatterns = 4;
 
-uint8_t gCurrentPatternNumber = 2; // Index number of which pattern is current
+uint8_t gCurrentPatternNumber = 3; // Index number of which pattern is current
 
 void loop()
 {
@@ -350,7 +393,7 @@ void loop()
     if (playSdWav1.isPlaying() == false)
     {
       //gCurrentPatternNumber = (gCurrentPatternNumber + 1) % 3;
-      gCurrentPatternNumber = random8(gNumberOfPatterns - 1);
+      //gCurrentPatternNumber = random8(gNumberOfPatterns - 1);
       delay(1000);
       gLastTimeCodeDoneAt = 0;
       gLastTimeCodeDoneFrom = 0;
@@ -459,6 +502,21 @@ void bpm(uint8_t BeatsPerMinute)
   for (int i = 0; i < NUM_LEDS; i++)
   {
     leds[i] = ColorFromPalette(palette, gHue + (i * 2), beat - gHue + (i * 10));
+  }
+}
+
+void fillGradual(uint8_t BeatsPerMinute) {
+  uint8_t beat = beatsin8(BeatsPerMinute, 0, NUM_LEDS);
+
+  CRGBPalette16 palette = PartyColors_p;
+  fill_solid(leds, NUM_LEDS, CRGB::Black);
+  for (int i = 0; i < NUM_LEDS; i++)
+  {
+    if (i <= beat)
+    {
+      leds[i] = ColorFromPalette(palette, gHue, 120 + ((beat / NUM_LEDS) * 135));
+
+    }
   }
 }
 
