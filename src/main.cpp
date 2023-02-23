@@ -226,9 +226,9 @@ void Celebrate() {
   AT(0, 0, 00.001) { FastLED.setBrightness(BRIGHTNESS); }
   FROM(0, 0, 00.012) { quarters(CRGB::Black, CRGB::Black, CRGB::Black, CRGB::Black); }
 
-  FROM(0, 0, 1.06) { bpm(120);}
+  FROM(0, 0, 1.06) { bpm(60);}
   FROM(0, 0, 5.620) { fillGradual(30);}
-  FROM(0, 0, 7.149) { bpm(120);}
+  FROM(0, 0, 7.149) { bpm(60);}
 
   FROM(0, 0, 9.175) { quarters(CRGB::Salmon, CRGB::Black, CRGB::Black, CRGB::Black);}
   FROM(0, 0, 9.667) { quarters(CRGB::Black, CRGB::Black, CRGB::Blue, CRGB::Black);}
@@ -236,17 +236,17 @@ void Celebrate() {
   FROM(0, 0, 10.677) { quarters(CRGB::Black, CRGB::Black, CRGB::Black, CRGB::Orange);}
 
   FROM(0, 0, 11.185) { quarters(CRGB::Black, CRGB::Salmon, CRGB::Black, CRGB::Black);}
-  FROM(0, 0, 11.435) { quarters(CRGB::Black, CRGB::Salmon, CRGB::Azure, CRGB::Black);}
-  FROM(0, 0, 11.682) { quarters(CRGB::Lime, CRGB::Salmon, CRGB::Azure, CRGB::Black);}
-  FROM(0, 0, 11.938) { quarters(CRGB::Lime, CRGB::Salmon, CRGB::Azure, CRGB::Orange);}
+  FROM(0, 0, 11.435) { quarters(CRGB::Black, CRGB::Salmon, CRGB::LightBlue, CRGB::Black);}
+  FROM(0, 0, 11.682) { quarters(CRGB::Lime, CRGB::Salmon, CRGB::LightBlue, CRGB::Black);}
+  FROM(0, 0, 11.938) { quarters(CRGB::Lime, CRGB::Salmon, CRGB::LightBlue, CRGB::Red);}
 
-  FROM(0, 0, 13.222) { bpm(120);}
-  FROM(0,0,16.471) { flashPulsing(); }
+  FROM(0, 0, 13.222) { bpm(60);}
+  FROM(0,0,16.471) { applause(30); }
 
-  FROM(0, 0, 17.220) { bpm(120);}
+  FROM(0, 0, 17.220) { bpm(60);}
   FROM(0, 0, 20.704) { wiggleLines(60);}
 
-  FROM(0, 0, 21.692) { bpm(120);}
+  FROM(0, 0, 21.692) { bpm(60);}
 
   FROM(0, 0, 25.188) { quarters(CRGB::Salmon, CRGB::Black, CRGB::Black, CRGB::Black);}
   FROM(0, 0, 25.667) { quarters(CRGB::Black, CRGB::Black, CRGB::Blue, CRGB::Black);}
@@ -254,13 +254,13 @@ void Celebrate() {
   FROM(0, 0, 26.677) { quarters(CRGB::Black, CRGB::Black, CRGB::Black, CRGB::Orange);}
 
   FROM(0, 0, 27.185) { quarters(CRGB::Black, CRGB::Salmon, CRGB::Black, CRGB::Black);}
-  FROM(0, 0, 27.435) { quarters(CRGB::Black, CRGB::Salmon, CRGB::Azure, CRGB::Black);}
-  FROM(0, 0, 27.682) { quarters(CRGB::Lime, CRGB::Salmon, CRGB::Azure, CRGB::Black);}
-  FROM(0, 0, 27.938) { quarters(CRGB::Lime, CRGB::Salmon, CRGB::Azure, CRGB::Orange);}
+  FROM(0, 0, 27.435) { quarters(CRGB::Black, CRGB::Salmon, CRGB::LightBlue, CRGB::Black);}
+  FROM(0, 0, 27.682) { quarters(CRGB::Lime, CRGB::Salmon, CRGB::LightBlue, CRGB::Black);}
+  FROM(0, 0, 27.938) { quarters(CRGB::Lime, CRGB::Salmon, CRGB::LightBlue, CRGB::Red);}
 
   FROM(0, 0, 28.645) { wiggleLines(60);}
 
-  FROM(0, 0, 29.644) { bpm(120);}
+  FROM(0, 0, 29.644) { bpm(60);}
   FROM(0, 0, 46.5) { fadeToBlackBy(leds, NUM_LEDS, 1); }
 }
 
@@ -393,7 +393,7 @@ void loop()
     if (playSdWav1.isPlaying() == false)
     {
       //gCurrentPatternNumber = (gCurrentPatternNumber + 1) % 3;
-      //gCurrentPatternNumber = random8(gNumberOfPatterns - 1);
+      gCurrentPatternNumber = random8(gNumberOfPatterns - 1);
       delay(1000);
       gLastTimeCodeDoneAt = 0;
       gLastTimeCodeDoneFrom = 0;
