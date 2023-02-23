@@ -99,10 +99,9 @@ void setup()
       delay(500);
     }
   }
-  delay(1000);
 
   pinMode(BUZZER_PIN, INPUT_PULLUP);
-  delay(1000);
+  delay(100);
   pushbutton.attach(BUZZER_PIN);
   pushbutton.interval(10);
 
@@ -338,6 +337,7 @@ void Demo()
 typedef void (*SimplePatternList[])();
 SimplePatternList gPatterns = {RamaLama, StayinAlive, Astro};
 char *gFilenames[3] = {"rldd.wav", "test2.wav", "astro.wav"};
+const uint8_t gNumberOfPatterns = 3;
 
 uint8_t gCurrentPatternNumber = 2; // Index number of which pattern is current
 
@@ -350,6 +350,7 @@ void loop()
     if (playSdWav1.isPlaying() == false)
     {
       //gCurrentPatternNumber = (gCurrentPatternNumber + 1) % 3;
+      gCurrentPatternNumber = random8(gNumberOfPatterns - 1);
       delay(1000);
       gLastTimeCodeDoneAt = 0;
       gLastTimeCodeDoneFrom = 0;
