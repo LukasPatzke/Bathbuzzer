@@ -6,6 +6,9 @@
 #include <SerialFlash.h>
 #include <OctoWS2811.h>
 #include <Bounce2.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 #define FASTLED_INTERNAL
 #include <FastLED.h>
@@ -393,7 +396,12 @@ void loop()
     if (playSdWav1.isPlaying() == false)
     {
       //gCurrentPatternNumber = (gCurrentPatternNumber + 1) % 3;
-      gCurrentPatternNumber = random8(gNumberOfPatterns - 1);
+      struct timespec ts;
+      clock_gettime(CLOCK_MONOTONIC, &ts);
+      /* using nano-seconds instead of seconds */
+      srand((time_t)ts.tv_nsec);
+
+      gCurrentPatternNumber = random8(rand()%gNumberOfPatterns);
       delay(1000);
       gLastTimeCodeDoneAt = 0;
       gLastTimeCodeDoneFrom = 0;
